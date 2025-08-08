@@ -31,33 +31,98 @@ export const useAdvancedAudioPlayer = (audioConfig?: AudioConfig, isEnabled: boo
     }
   }, [externalHasUserInteracted, hasUserInteracted]);
 
-  // Fade audio in or out
-  const fadeAudio = useCallback((audio: HTMLAudioElement, direction: 'in' | 'out', duration: number = 1000): Promise<void> => {
+  // Professional fade audio in or out with smooth easing curves
+  const fadeAudio = useCallback((audio: HTMLAudioElement, direction: 'in' | 'out', duration: number = 1000, targetVolume: number = 0.6): Promise<void> => {
     return new Promise((resolve) => {
       const startVolume = direction === 'in' ? 0 : audio.volume;
-      const endVolume = direction === 'in' ? 0.6 : 0;
-      const steps = 20;
-      const stepDuration = duration / steps;
-      const volumeStep = (endVolume - startVolume) / steps;
-      let currentStep = 0;
-
+      const endVolume = direction === 'in' ? targetVolume : 0;
+      const startTime = performance.now();
+      
       if (direction === 'in') {
         audio.volume = 0;
       }
 
-      const fadeInterval = setInterval(() => {
-        currentStep++;
-        const newVolume = startVolume + (volumeStep * currentStep);
-        audio.volume = Math.max(0, Math.min(0.6, newVolume));
+      // Use easeInOutCubic for professional smooth transitions
+      const easeInOutCubic = (t: number): number => {
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      };
 
-        if (currentStep >= steps) {
+      const fadeStep = () => {
+        const elapsed = performance.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easedProgress = easeInOutCubic(progress);
+        
+        const newVolume = startVolume + (endVolume - startVolume) * easedProgress;
+        audio.volume = Math.max(0, Math.min(targetVolume, newVolume));
+
+        if (progress >= 1) {
           audio.volume = endVolume;
-          clearInterval(fadeInterval);
           resolve();
+        } else {
+          requestAnimationFrame(fadeStep);
         }
-      }, stepDuration);
+      };
+
+      requestAnimationFrame(fadeStep);
     });
   }, []);
+
+  // Cross-fade between two audio tracks for seamless transitions
+  const crossFade = useCallback((fromAudio: HTMLAudioElement, toAudio: HTMLAudioElement, config: AudioConfig, duration: number = 1500): Promise<void> => {
+    return new Promise((resolve) => {
+      // Prepare the new audio
+      const prepareAndCrossFade = async () => {
+        toAudio.currentTime = config.loop.start;
+        toAudio.volume = 0;
+        
+        try {
+          await toAudio.play();
+        } catch (error) {
+          console.warn('Cross-fade: Failed to start new audio:', error);
+          // Fall back to regular transition
+          await fadeAudio(fromAudio, 'out', duration / 2);
+          resolve();
+          return;
+        }
+
+        const startTime = performance.now();
+        const fromStartVolume = fromAudio.volume;
+        const toTargetVolume = 0.6;
+
+        // Use a smooth S-curve for cross-fading
+        const smoothStep = (t: number): number => {
+          return t * t * (3 - 2 * t);
+        };
+
+        const crossFadeStep = () => {
+          const elapsed = performance.now() - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const easedProgress = smoothStep(progress);
+          
+          // Fade out the old audio
+          const fromVolume = fromStartVolume * (1 - easedProgress);
+          fromAudio.volume = Math.max(0, fromVolume);
+          
+          // Fade in the new audio
+          const toVolume = toTargetVolume * easedProgress;
+          toAudio.volume = Math.min(toTargetVolume, toVolume);
+
+          if (progress >= 1) {
+            fromAudio.pause();
+            fromAudio.currentTime = 0;
+            toAudio.volume = toTargetVolume;
+            resolve();
+          } else {
+            requestAnimationFrame(crossFadeStep);
+          }
+        };
+
+        requestAnimationFrame(crossFadeStep);
+      };
+
+      prepareAndCrossFade();
+    });
+  }, [fadeAudio]);
 
   // Create and prepare audio element
   const createAudioElement = useCallback((src: string): HTMLAudioElement => {
@@ -75,7 +140,7 @@ export const useAdvancedAudioPlayer = (audioConfig?: AudioConfig, isEnabled: boo
     return audio;
   }, []);
 
-  // Start audio playback with fade-in
+  // Start audio playback with professional fade-in
   const startAudio = useCallback(async (audio: HTMLAudioElement, config: AudioConfig) => {
     try {
       audio.currentTime = config.loop.start;
@@ -104,7 +169,8 @@ export const useAdvancedAudioPlayer = (audioConfig?: AudioConfig, isEnabled: boo
         }
       }
       
-      await fadeAudio(audio, 'in', 800);
+      // Use longer, more professional fade-in (1.2 seconds)
+      await fadeAudio(audio, 'in', 1200);
       setIsPlaying(true);
     } catch (error) {
       console.warn('Failed to start audio:', error);
@@ -112,10 +178,11 @@ export const useAdvancedAudioPlayer = (audioConfig?: AudioConfig, isEnabled: boo
     }
   }, [fadeAudio]);
 
-  // Stop audio playback with fade-out
+  // Stop audio playback with professional fade-out
   const stopAudio = useCallback(async (audio: HTMLAudioElement) => {
     try {
-      await fadeAudio(audio, 'out', 600);
+      // Use longer, more professional fade-out (1 second)
+      await fadeAudio(audio, 'out', 1000);
       audio.pause();
       audio.currentTime = 0;
     } catch (error) {
@@ -124,7 +191,7 @@ export const useAdvancedAudioPlayer = (audioConfig?: AudioConfig, isEnabled: boo
     }
   }, [fadeAudio]);
 
-  // Handle smooth transition between audio tracks
+  // Handle smooth transition between audio tracks with professional cross-fading
   const transitionToNewAudio = useCallback(async (newConfig: AudioConfig) => {
     if (currentAudioRef.current && currentAudioSrc === newConfig.src) {
       return; // Same audio, no need to transition
@@ -135,102 +202,57 @@ export const useAdvancedAudioPlayer = (audioConfig?: AudioConfig, isEnabled: boo
 
     // Capture the current playing state before any transitions
     const wasPlaying = isPlaying;
+    const currentAudio = currentAudioRef.current;
 
     try {
-      // For mobile compatibility, try to reuse the existing audio element if possible
-      let newAudio: HTMLAudioElement;
+      // Create new audio element for the new track
+      const newAudio = createAudioElement(newConfig.src);
       
-      if (currentAudioRef.current && wasPlaying) {
-        // Reuse the existing audio element for better mobile compatibility
-        newAudio = currentAudioRef.current;
+      // Wait for new audio to be ready with multiple event listeners for better reliability
+      await new Promise<void>((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          console.warn(`Audio load timeout for: ${newConfig.src}`);
+          reject(new Error('Audio load timeout'));
+        }, 15000);
         
-        // Fade out current audio first
-        await fadeAudio(newAudio, 'out', 600);
+        let resolved = false;
         
-        // Change the source while keeping the same element
-        newAudio.src = newConfig.src;
+        const resolveOnce = () => {
+          if (!resolved) {
+            resolved = true;
+            clearTimeout(timeout);
+            resolve();
+          }
+        };
+        
+        newAudio.addEventListener('canplaythrough', resolveOnce, { once: true });
+        newAudio.addEventListener('canplay', resolveOnce, { once: true });
+        newAudio.addEventListener('loadeddata', resolveOnce, { once: true });
+        
+        newAudio.addEventListener('error', (error) => {
+          if (!resolved) {
+            resolved = true;
+            clearTimeout(timeout);
+            console.error('Audio load error:', error);
+            reject(new Error('Audio load failed'));
+          }
+        }, { once: true });
+        
         newAudio.load();
-        
-        // Wait for the audio to be ready
-        await new Promise<void>((resolve, reject) => {
-          const timeout = setTimeout(() => {
-            console.warn(`Audio load timeout for: ${newConfig.src}`);
-            reject(new Error('Audio load timeout'));
-          }, 15000);
-          
-          let resolved = false;
-          
-          const resolveOnce = () => {
-            if (!resolved) {
-              resolved = true;
-              clearTimeout(timeout);
-              resolve();
-            }
-          };
-          
-          newAudio.addEventListener('canplaythrough', resolveOnce, { once: true });
-          newAudio.addEventListener('canplay', resolveOnce, { once: true });
-          newAudio.addEventListener('loadeddata', resolveOnce, { once: true });
-          
-          newAudio.addEventListener('error', (error) => {
-            if (!resolved) {
-              resolved = true;
-              clearTimeout(timeout);
-              console.error('Audio load error:', error);
-              reject(new Error('Audio load failed'));
-            }
-          }, { once: true });
-        });
-      } else {
-        // Create new audio element only if we don't have one or it wasn't playing
-        newAudio = createAudioElement(newConfig.src);
-        
-        // Wait for new audio to be ready with multiple event listeners for better reliability
-        await new Promise<void>((resolve, reject) => {
-          const timeout = setTimeout(() => {
-            console.warn(`Audio load timeout for: ${newConfig.src}`);
-            reject(new Error('Audio load timeout'));
-          }, 15000);
-          
-          let resolved = false;
-          
-          const resolveOnce = () => {
-            if (!resolved) {
-              resolved = true;
-              clearTimeout(timeout);
-              resolve();
-            }
-          };
-          
-          newAudio.addEventListener('canplaythrough', resolveOnce, { once: true });
-          newAudio.addEventListener('canplay', resolveOnce, { once: true });
-          newAudio.addEventListener('loadeddata', resolveOnce, { once: true });
-          
-          newAudio.addEventListener('error', (error) => {
-            if (!resolved) {
-              resolved = true;
-              clearTimeout(timeout);
-              console.error('Audio load error:', error);
-              reject(new Error('Audio load failed'));
-            }
-          }, { once: true });
-          
-          newAudio.load();
-        });
+      });
 
-        // If there was current audio playing, stop it
-        if (currentAudioRef.current && wasPlaying) {
-          await stopAudio(currentAudioRef.current);
-        }
-      }
-
+      // Update references before starting transition
       nextAudioRef.current = newAudio;
       currentAudioRef.current = newAudio;
       setCurrentAudioSrc(newConfig.src);
       setIsLoading(false);
 
-      // Start new audio if should be playing - use the captured state instead of current isPlaying
-      if (hasUserInteracted && (shouldAutoPlay || wasPlaying)) {
+      // If there was current audio playing, use cross-fade for smooth transition
+      if (currentAudio && wasPlaying && hasUserInteracted) {
+        await crossFade(currentAudio, newAudio, newConfig, 1800); // 1.8 second cross-fade
+        setIsPlaying(true);
+      } else if (hasUserInteracted && (shouldAutoPlay || wasPlaying)) {
+        // If no current audio or not playing, just start new audio with fade-in
         await startAudio(newAudio, newConfig);
       }
 
@@ -242,15 +264,15 @@ export const useAdvancedAudioPlayer = (audioConfig?: AudioConfig, isEnabled: boo
       setIsTransitioning(false);
       
       // If we failed to load new audio but have current audio, keep it playing using captured state
-      if (currentAudioRef.current && !wasPlaying && hasUserInteracted && shouldAutoPlay) {
+      if (currentAudio && wasPlaying && hasUserInteracted && shouldAutoPlay) {
         try {
-          await startAudio(currentAudioRef.current, { src: currentAudioSrc!, loop: newConfig.loop });
+          await startAudio(currentAudio, { src: currentAudioSrc!, loop: newConfig.loop });
         } catch (fallbackError) {
           console.warn('Fallback audio start failed:', fallbackError);
         }
       }
     }
-  }, [currentAudioSrc, createAudioElement, stopAudio, startAudio, fadeAudio, isPlaying, hasUserInteracted, shouldAutoPlay]);
+  }, [currentAudioSrc, createAudioElement, crossFade, startAudio, isPlaying, hasUserInteracted, shouldAutoPlay]);
 
   // Initialize or change audio when config changes with debouncing
   useEffect(() => {

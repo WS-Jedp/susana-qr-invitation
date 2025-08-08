@@ -60,12 +60,23 @@ export const MinimalAudioPlayer: React.FC<MinimalAudioPlayerProps> = ({
           disabled={!canPlay || isLoading || isTransitioning}
           className={`
             relative w-12 h-12 rounded-full flex items-center justify-center
-            transition-all duration-300 overflow-hidden
+            transition-all duration-500 overflow-hidden
             ${canPlay && !isLoading && !isTransitioning
               ? 'bg-charcoal/80 hover:bg-charcoal text-white shadow-lg hover:shadow-xl' 
               : 'bg-gray-400/50 text-gray-300 cursor-not-allowed'
             }
+            ${isTransitioning ? 'ring-2 ring-orange-400/50 ring-offset-2 ring-offset-transparent' : ''}
           `}
+          animate={{
+            scale: isTransitioning ? [1, 1.05, 1] : 1,
+          }}
+          transition={{
+            scale: {
+              duration: isTransitioning ? 1.5 : 0.2,
+              repeat: isTransitioning ? Infinity : 0,
+              ease: "easeInOut"
+            }
+          }}
           whileTap={{ scale: 0.95 }}
           whileHover={{ 
             boxShadow: "0 8px 25px rgba(0,0,0,0.15)" 
@@ -79,10 +90,14 @@ export const MinimalAudioPlayer: React.FC<MinimalAudioPlayerProps> = ({
                 animate={{ opacity: 1, rotate: 360 }}
                 exit={{ opacity: 0 }}
                 transition={{ 
-                  rotate: { duration: 1, repeat: Infinity, ease: "linear" },
-                  opacity: { duration: 0.2 }
+                  rotate: { duration: 1.5, repeat: Infinity, ease: "linear" },
+                  opacity: { duration: 0.3 }
                 }}
-                className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
+                className={`w-4 h-4 border-2 rounded-full ${
+                  isTransitioning 
+                    ? 'border-orange-300/30 border-t-orange-400' 
+                    : 'border-white/30 border-t-white'
+                }`}
               />
             ) : isPlaying ? (
               <motion.div
@@ -111,18 +126,22 @@ export const MinimalAudioPlayer: React.FC<MinimalAudioPlayerProps> = ({
 
         {/* Playing Indicator */}
         <AnimatePresence>
-          {isPlaying && (
+          {(isPlaying || isTransitioning) && (
             <motion.div
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0 }}
-              className="absolute -inset-1 rounded-full border-2 border-white/20"
+              className={`absolute -inset-1 rounded-full border-2 ${
+                isTransitioning ? 'border-orange-400/40' : 'border-white/20'
+              }`}
             >
               <motion.div
-                className="absolute -inset-0.5 rounded-full border border-white/40"
+                className={`absolute -inset-0.5 rounded-full border ${
+                  isTransitioning ? 'border-orange-400/60' : 'border-white/40'
+                }`}
                 animate={{ rotate: 360 }}
                 transition={{ 
-                  duration: 8, 
+                  duration: isTransitioning ? 4 : 8, 
                   repeat: Infinity, 
                   ease: "linear" 
                 }}
@@ -153,7 +172,7 @@ export const MinimalAudioPlayer: React.FC<MinimalAudioPlayerProps> = ({
                 isPlaying ? 'bg-green-500' : 'bg-gray-400'
               }`} />
               <span className="text-xs text-gray-600">
-                {isTransitioning ? 'Cambiando...' : 
+                {isTransitioning ? 'Transicionando...' : 
                  isPlaying ? 'Reproduciendo' : 'Pausado'}
               </span>
             </div>
