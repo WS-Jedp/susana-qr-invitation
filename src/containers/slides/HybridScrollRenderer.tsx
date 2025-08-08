@@ -21,13 +21,14 @@ interface HybridScrollRendererProps {
 
 const HybridScrollRenderer: React.FC<HybridScrollRendererProps> = ({ 
   hasAudioPermission = false,
-  shouldAutoPlay = false
+  shouldAutoPlay = false // Wait for proper user interaction through modal
 }) => {
   const { slides, currentSlideIndex, loadData, isLoading, error, goToSlide } = useSlideStore();
   const containerRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const slideChangeTimeoutRef = useRef<number | null>(null);
 
   // Detect mobile device and reduced motion preference
   useEffect(() => {
@@ -44,6 +45,12 @@ const HybridScrollRenderer: React.FC<HybridScrollRendererProps> = ({
   // Enhanced navigation with smooth scrolling and mobile optimization
   const navigateToSlide = useCallback((targetIndex: number) => {
     if (containerRef.current && targetIndex >= 0 && targetIndex < slides.length) {
+      // Clear any pending slide change timeout
+      if (slideChangeTimeoutRef.current) {
+        clearTimeout(slideChangeTimeoutRef.current);
+        slideChangeTimeoutRef.current = null;
+      }
+      
       const targetY = (targetIndex / (slides.length - 1)) * (containerRef.current.scrollHeight - window.innerHeight);
       containerRef.current.scrollTo({ 
         top: targetY, 
@@ -52,7 +59,7 @@ const HybridScrollRenderer: React.FC<HybridScrollRendererProps> = ({
     }
   }, [slides.length, reducedMotion, isMobile]);
 
-  // Handle scroll events manually with throttling for mobile performance
+  // Handle scroll events manually with throttling for mobile performance and debounced slide changes
   const handleScroll = useCallback(() => {
     if (!containerRef.current) return;
     
@@ -65,10 +72,18 @@ const HybridScrollRenderer: React.FC<HybridScrollRendererProps> = ({
       setScrollProgress(progress);
     });
     
-    // Update current slide based on scroll position with debouncing
+    // Debounce slide changes to prevent rapid audio switching
     const newIndex = Math.round(progress * (slides.length - 1));
     if (newIndex !== currentSlideIndex && newIndex >= 0 && newIndex < slides.length) {
-      goToSlide(newIndex);
+      // Clear existing timeout
+      if (slideChangeTimeoutRef.current) {
+        clearTimeout(slideChangeTimeoutRef.current);
+      }
+      
+      // Debounce slide change by 150ms
+      slideChangeTimeoutRef.current = window.setTimeout(() => {
+        goToSlide(newIndex);
+      }, 150);
     }
   }, [slides.length, currentSlideIndex, goToSlide]);
 
@@ -88,6 +103,13 @@ const HybridScrollRenderer: React.FC<HybridScrollRendererProps> = ({
 
   useEffect(() => {
     loadData();
+    
+    // Cleanup timeout on unmount
+    return () => {
+      if (slideChangeTimeoutRef.current) {
+        clearTimeout(slideChangeTimeoutRef.current);
+      }
+    };
   }, [loadData]);
 
   // Add scroll event listener with passive scrolling for mobile performance
