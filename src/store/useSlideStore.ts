@@ -110,7 +110,7 @@ export const useSlideStore = create<SlideState>((set, get) => ({
     try {
       set({ isLoading: true, error: null });
       
-      const response = await fetch('/data.json');
+      const response = await fetch(`${import.meta.env.BASE_URL}data.json`);
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }

@@ -127,7 +127,7 @@ ponte tus audífonos.
             className="space-y-4 mb-12"
           >
             <div className="flex items-center justify-center space-x-4 text-medium-gray">
-              <p className="text-lg">Esto se vive mejor con buen sonido, sin distracciones.</p>
+              <p className="text-lg">Esto se vive mejor con buen sonido y sin distracciones.</p>
             </div>
             
           </motion.div>

@@ -109,7 +109,7 @@ const HybridScrollRenderer: React.FC<HybridScrollRendererProps> = ({
 
   if (isLoading) {
     return (
-      <div className="w-full h-screen flex items-center justify-center bg-pure-white">
+      <div className="w-full min-h-dvh flex items-center justify-center bg-pure-white">
         <div className="text-center">
           <div className="w-20 h-20 mx-auto mb-6">
             <div className="w-full h-full border-4 border-soft-gray border-t-accent-blue rounded-full animate-spin"></div>
@@ -123,7 +123,7 @@ const HybridScrollRenderer: React.FC<HybridScrollRendererProps> = ({
 
   if (error) {
     return (
-      <div className="w-full h-screen flex items-center justify-center bg-pure-white">
+      <div className="w-full min-h-dvh flex items-center justify-center bg-pure-white">
         <div className="text-center premium-card p-8 max-w-md mx-4">
           <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-rose-gold to-champagne rounded-full flex items-center justify-center">
             <span className="text-2xl">⚠️</span>
@@ -137,7 +137,7 @@ const HybridScrollRenderer: React.FC<HybridScrollRendererProps> = ({
 
   if (!slides.length) {
     return (
-      <div className="w-full h-screen flex items-center justify-center bg-pure-white">
+      <div className="w-full min-h-dvh flex items-center justify-center bg-pure-white">
         <p className="premium-text text-xl text-charcoal">No hay contenido disponible</p>
       </div>
     );
@@ -180,13 +180,13 @@ const HybridScrollRenderer: React.FC<HybridScrollRendererProps> = ({
           containerRef.current = node;
           swipeRef.current = node;
         }}
-        className="h-screen overflow-y-auto overflow-x-hidden scroll-smooth"
+        className="min-h-dvh overflow-y-auto overflow-x-hidden scroll-smooth"
         style={{ scrollSnapType: 'y mandatory' }}
       >
         {slides.map((slide, index) => (
           <div
             key={slide.id}
-            className="min-h-screen w-full"
+            className="min-h-dvh w-full"
             style={{ scrollSnapAlign: 'start' }}
           >
             {getSlideComponent(slide, index)}

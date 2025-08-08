@@ -13,7 +13,7 @@
                     "Esta página es una invitación exclusiva y personal, creada especialmente para ti."
                 ],
                 "audio": {
-                    "src": "/audio/superstar.mp3",
+                    "src": "/susana-qr-invitation/audio/superstar.mp3",
                     "loop": {
                         "start": 1,
                         "end": 120

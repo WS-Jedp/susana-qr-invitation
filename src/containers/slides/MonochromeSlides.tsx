@@ -23,7 +23,7 @@ export const RomanticWelcomeSlide: React.FC<MonochromeSlideProps> = ({ slide }) 
   return (
     <motion.div
       ref={ref}
-      className="relative h-screen flex items-center justify-center overflow-hidden bg-pure-white letter-paper"
+      className="relative min-h-dvh flex items-center justify-center overflow-hidden bg-pure-white letter-paper"
     >
       {/* Subtle Background Elements */}
       <div className="absolute inset-0">
@@ -144,7 +144,7 @@ export const RomanticReasonSlide: React.FC<MonochromeSlideProps> = () => {
   return (
     <motion.div
       ref={ref}
-      className="relative h-screen flex items-center justify-center bg-pure-white letter-paper"
+      className="relative min-h-dvh flex items-center justify-center bg-pure-white letter-paper"
     >
       <div className="relative z-10 max-w-6xl mx-auto px-8 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center h-full">
         {/* Title Section */}
@@ -251,7 +251,7 @@ export const RomanticWhyYouSlide: React.FC<MonochromeSlideProps> = () => {
     <motion.div
       ref={ref}
       style={{ scale }}
-      className="relative h-screen flex flex-col items-center justify-between bg-light-gray letter-paper"
+      className="relative min-h-dvh flex flex-col items-center justify-between bg-light-gray letter-paper"
     >
       <div className="relative z-10 max-w-5xl mx-auto px-8 h-full flex flex-col justify-between">
         {/* Title with Professional Icon */}
@@ -403,7 +403,7 @@ export const PersonalCuriousFactsSlide: React.FC<MonochromeSlideProps> = () => {
   return (
     <motion.div
       ref={ref}
-      className="relative h-screen flex items-center justify-center bg-charcoal paper-texture overflow-hidden"
+      className="relative min-h-dvh flex items-center justify-center bg-charcoal paper-texture overflow-hidden"
     >
       {/* Animated Background Pattern */}
       <div className="absolute inset-0">
@@ -535,12 +535,12 @@ export const RomanticFunFactsSlide: React.FC<MonochromeSlideProps> = ({ slide })
 
   // Real images from public folder (only for second set)
   const realImages = [
-    "/images/fitness-1.jpg",
-    "/images/fitness-2.jpg", 
-    "/images/fitness-3.jpg",
-    "/images/fitness-4.jpg",
-    "/images/fitness-5.jpg",
-    "/images/fitness-6.jpg",
+    "/susana-qr-invitation/images/fitness-1.jpg",
+    "/susana-qr-invitation/images/fitness-2.jpg", 
+    "/susana-qr-invitation/images/fitness-3.jpg",
+    "/susana-qr-invitation/images/fitness-4.jpg",
+    "/susana-qr-invitation/images/fitness-5.jpg",
+    "/susana-qr-invitation/images/fitness-6.jpg",
   ];
 
   const getCurrentImageSet = () => {
@@ -556,7 +556,7 @@ export const RomanticFunFactsSlide: React.FC<MonochromeSlideProps> = ({ slide })
   return (
     <motion.div
       ref={ref}
-      className="relative h-screen flex flex-col bg-charcoal paper-texture overflow-hidden"
+      className="relative min-h-dvh flex flex-col bg-charcoal paper-texture overflow-hidden"
     >
       {/* Animated Background Pattern */}
       <div className="absolute inset-0 opacity-10">
@@ -877,7 +877,7 @@ export const RomanticQuestionsSlide: React.FC<MonochromeSlideProps> = ({ slide }
   return (
     <motion.div
       ref={ref}
-      className="relative h-screen flex flex-col bg-pure-white letter-paper overflow-hidden"
+      className="relative min-h-dvh flex flex-col bg-pure-white letter-paper overflow-hidden"
     >
       {/* Subtle Background Pattern */}
       <div className="absolute inset-0 opacity-5">
@@ -1086,7 +1086,7 @@ export const CallToActionSlide: React.FC<MonochromeSlideProps> = () => {
   return (
     <motion.div
       ref={ref}
-      className="relative h-screen flex items-center justify-center bg-light-gray letter-paper overflow-hidden"
+      className="relative min-h-dvh flex items-center justify-center bg-light-gray letter-paper overflow-hidden"
     >
       {/* Subtle Background Elements */}
       <div className="absolute inset-0">
@@ -1173,7 +1173,7 @@ export const RomanticFinalSlide: React.FC<MonochromeSlideProps> = ({ slide }) =>
   return (
     <motion.div
       ref={ref}
-      className="relative h-screen flex items-center justify-center bg-light-gray letter-paper overflow-hidden"
+      className="relative min-h-dvh flex items-center justify-center bg-light-gray letter-paper overflow-hidden"
     >
       {/* Floating elements */}
       <div className="absolute inset-0 overflow-hidden">
