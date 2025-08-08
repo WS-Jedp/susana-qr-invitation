@@ -8,14 +8,14 @@ interface AudioConfig {
   };
 }
 
-export const useAdvancedAudioPlayer = (audioConfig?: AudioConfig, isEnabled: boolean = true, shouldAutoPlay: boolean = false) => {
+export const useAdvancedAudioPlayer = (audioConfig?: AudioConfig, isEnabled: boolean = true, shouldAutoPlay: boolean = false, externalHasUserInteracted: boolean = false) => {
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
   const nextAudioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [hasUserInteracted, setHasUserInteracted] = useState(false);
+  const [hasUserInteracted, setHasUserInteracted] = useState(externalHasUserInteracted);
   const [hasAutoPlayTriggered, setHasAutoPlayTriggered] = useState(false);
   const [currentAudioSrc, setCurrentAudioSrc] = useState<string | null>(null);
   
@@ -23,6 +23,13 @@ export const useAdvancedAudioPlayer = (audioConfig?: AudioConfig, isEnabled: boo
   const fadeIntervalRef = useRef<number | null>(null);
   const transitionTimeoutRef = useRef<number | null>(null);
   const debounceTimeoutRef = useRef<number | null>(null);
+
+  // Sync external hasUserInteracted state
+  useEffect(() => {
+    if (externalHasUserInteracted && !hasUserInteracted) {
+      setHasUserInteracted(true);
+    }
+  }, [externalHasUserInteracted, hasUserInteracted]);
 
   // Fade audio in or out
   const fadeAudio = useCallback((audio: HTMLAudioElement, direction: 'in' | 'out', duration: number = 1000): Promise<void> => {
@@ -72,7 +79,31 @@ export const useAdvancedAudioPlayer = (audioConfig?: AudioConfig, isEnabled: boo
   const startAudio = useCallback(async (audio: HTMLAudioElement, config: AudioConfig) => {
     try {
       audio.currentTime = config.loop.start;
-      await audio.play();
+      
+      // For mobile compatibility: try to play immediately
+      try {
+        await audio.play();
+      } catch (playError) {
+        // If autoplay fails on mobile, it's usually because we need a fresh user interaction
+        console.warn('Initial play failed, likely due to mobile autoplay restrictions:', playError);
+        
+        // Try to resume audio context if it exists
+        try {
+          const AudioContext = window.AudioContext || (window as unknown as { webkitAudioContext: typeof window.AudioContext }).webkitAudioContext;
+          if (AudioContext) {
+            const audioContext = new AudioContext();
+            if (audioContext.state === 'suspended') {
+              await audioContext.resume();
+              // Try playing again after resuming context
+              await audio.play();
+            }
+          }
+        } catch (contextError) {
+          console.warn('Audio context resume failed:', contextError);
+          throw playError; // Re-throw original play error
+        }
+      }
+      
       await fadeAudio(audio, 'in', 800);
       setIsPlaying(true);
     } catch (error) {
@@ -102,59 +133,104 @@ export const useAdvancedAudioPlayer = (audioConfig?: AudioConfig, isEnabled: boo
     setIsTransitioning(true);
     setIsLoading(true);
 
+    // Capture the current playing state before any transitions
+    const wasPlaying = isPlaying;
+
     try {
-      // Prepare new audio
-      const newAudio = createAudioElement(newConfig.src);
+      // For mobile compatibility, try to reuse the existing audio element if possible
+      let newAudio: HTMLAudioElement;
       
-      // Wait for new audio to be ready with multiple event listeners for better reliability
-      await new Promise<void>((resolve, reject) => {
-        const timeout = setTimeout(() => {
-          console.warn(`Audio load timeout for: ${newConfig.src}`);
-          reject(new Error('Audio load timeout'));
-        }, 15000); // Increased timeout to 15 seconds
+      if (currentAudioRef.current && wasPlaying) {
+        // Reuse the existing audio element for better mobile compatibility
+        newAudio = currentAudioRef.current;
         
-        let resolved = false;
+        // Fade out current audio first
+        await fadeAudio(newAudio, 'out', 600);
         
-        const resolveOnce = () => {
-          if (!resolved) {
-            resolved = true;
-            clearTimeout(timeout);
-            resolve();
-          }
-        };
-        
-        // Multiple events to catch when audio is ready
-        newAudio.addEventListener('canplaythrough', resolveOnce, { once: true });
-        newAudio.addEventListener('canplay', resolveOnce, { once: true });
-        newAudio.addEventListener('loadeddata', resolveOnce, { once: true });
-        
-        newAudio.addEventListener('error', (error) => {
-          if (!resolved) {
-            resolved = true;
-            clearTimeout(timeout);
-            console.error('Audio load error:', error);
-            reject(new Error('Audio load failed'));
-          }
-        }, { once: true });
-        
-        // Force load the audio
+        // Change the source while keeping the same element
+        newAudio.src = newConfig.src;
         newAudio.load();
-      });
+        
+        // Wait for the audio to be ready
+        await new Promise<void>((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            console.warn(`Audio load timeout for: ${newConfig.src}`);
+            reject(new Error('Audio load timeout'));
+          }, 15000);
+          
+          let resolved = false;
+          
+          const resolveOnce = () => {
+            if (!resolved) {
+              resolved = true;
+              clearTimeout(timeout);
+              resolve();
+            }
+          };
+          
+          newAudio.addEventListener('canplaythrough', resolveOnce, { once: true });
+          newAudio.addEventListener('canplay', resolveOnce, { once: true });
+          newAudio.addEventListener('loadeddata', resolveOnce, { once: true });
+          
+          newAudio.addEventListener('error', (error) => {
+            if (!resolved) {
+              resolved = true;
+              clearTimeout(timeout);
+              console.error('Audio load error:', error);
+              reject(new Error('Audio load failed'));
+            }
+          }, { once: true });
+        });
+      } else {
+        // Create new audio element only if we don't have one or it wasn't playing
+        newAudio = createAudioElement(newConfig.src);
+        
+        // Wait for new audio to be ready with multiple event listeners for better reliability
+        await new Promise<void>((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            console.warn(`Audio load timeout for: ${newConfig.src}`);
+            reject(new Error('Audio load timeout'));
+          }, 15000);
+          
+          let resolved = false;
+          
+          const resolveOnce = () => {
+            if (!resolved) {
+              resolved = true;
+              clearTimeout(timeout);
+              resolve();
+            }
+          };
+          
+          newAudio.addEventListener('canplaythrough', resolveOnce, { once: true });
+          newAudio.addEventListener('canplay', resolveOnce, { once: true });
+          newAudio.addEventListener('loadeddata', resolveOnce, { once: true });
+          
+          newAudio.addEventListener('error', (error) => {
+            if (!resolved) {
+              resolved = true;
+              clearTimeout(timeout);
+              console.error('Audio load error:', error);
+              reject(new Error('Audio load failed'));
+            }
+          }, { once: true });
+          
+          newAudio.load();
+        });
 
-      nextAudioRef.current = newAudio;
-
-      // If there's current audio playing, fade it out
-      if (currentAudioRef.current && isPlaying) {
-        await stopAudio(currentAudioRef.current);
+        // If there was current audio playing, stop it
+        if (currentAudioRef.current && wasPlaying) {
+          await stopAudio(currentAudioRef.current);
+        }
       }
 
-      // Switch to new audio
+      nextAudioRef.current = newAudio;
       currentAudioRef.current = newAudio;
       setCurrentAudioSrc(newConfig.src);
       setIsLoading(false);
 
-      // Start new audio if should be playing
-      if (hasUserInteracted && shouldAutoPlay) {
+      // Start new audio if should be playing - use the captured state instead of current isPlaying
+      if (hasUserInteracted && (shouldAutoPlay || wasPlaying)) {
         await startAudio(newAudio, newConfig);
       }
 
@@ -165,8 +241,8 @@ export const useAdvancedAudioPlayer = (audioConfig?: AudioConfig, isEnabled: boo
       setIsLoading(false);
       setIsTransitioning(false);
       
-      // If we failed to load new audio but have current audio, keep it playing
-      if (currentAudioRef.current && !isPlaying && hasUserInteracted && shouldAutoPlay) {
+      // If we failed to load new audio but have current audio, keep it playing using captured state
+      if (currentAudioRef.current && !wasPlaying && hasUserInteracted && shouldAutoPlay) {
         try {
           await startAudio(currentAudioRef.current, { src: currentAudioSrc!, loop: newConfig.loop });
         } catch (fallbackError) {
@@ -174,7 +250,7 @@ export const useAdvancedAudioPlayer = (audioConfig?: AudioConfig, isEnabled: boo
         }
       }
     }
-  }, [currentAudioSrc, createAudioElement, stopAudio, startAudio, isPlaying, hasUserInteracted, shouldAutoPlay]);
+  }, [currentAudioSrc, createAudioElement, stopAudio, startAudio, fadeAudio, isPlaying, hasUserInteracted, shouldAutoPlay]);
 
   // Initialize or change audio when config changes with debouncing
   useEffect(() => {

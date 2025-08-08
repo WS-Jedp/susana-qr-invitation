@@ -25,7 +25,12 @@ export const MinimalAudioPlayer: React.FC<MinimalAudioPlayerProps> = ({
   hasUserInteracted = false,
   shouldAutoPlay = false
 }) => {
-  const { isPlaying, isLoading, isTransitioning, toggle, canPlay } = useAdvancedAudioPlayer(audioConfig, isEnabled && hasUserInteracted, shouldAutoPlay);
+  const { isPlaying, isLoading, isTransitioning, toggle, canPlay } = useAdvancedAudioPlayer(
+    audioConfig, 
+    isEnabled, 
+    shouldAutoPlay, 
+    hasUserInteracted
+  );
 
   if (!audioConfig) return null;
 

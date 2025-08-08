@@ -23,6 +23,23 @@ export const AudioPermissionModal: React.FC<AudioPermissionModalProps> = ({
         if (audioContext.state === 'suspended') {
           await audioContext.resume();
         }
+        
+        // For mobile compatibility: create a silent audio to establish user interaction context
+        const silentAudio = new Audio();
+        silentAudio.volume = 0;
+        silentAudio.muted = true;
+        
+        // Create a very short data URL for a silent audio
+        const silentDataUrl = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhCT2V3fPHdSYEK37M8tiFNwcZZ7zd5pdRDw5On+3pq2AcBzuR2e/AfTECJYDJ9dN3NAVI';
+        silentAudio.src = silentDataUrl;
+        
+        try {
+          await silentAudio.play();
+          silentAudio.pause();
+        } catch {
+          // Silent fail - this is just to establish audio context
+          console.debug('Silent audio play failed, but that\'s expected on some browsers');
+        }
       }
     } catch (error) {
       console.warn('Could not initialize audio context:', error);
@@ -127,7 +144,7 @@ ponte tus audífonos.
             className="space-y-4 mb-12"
           >
             <div className="flex items-center justify-center space-x-4 text-medium-gray">
-              <p className="text-lg">Esto se vive mejor con buen sonido y sin distracciones.</p>
+              <p className="text-lg">Esto se vive mejor con un buen sonido y sin distracciones.</p>
             </div>
             
           </motion.div>
