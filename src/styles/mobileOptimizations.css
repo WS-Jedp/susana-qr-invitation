@@ -1,0 +1,113 @@
+/* Mobile Animation Optimizations */
+
+/* Base optimization for all motion elements */
+.motion-element {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-perspective: 1000px;
+  perspective: 1000px;
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 768px) {
+  .motion-element {
+    /* Disable 3D transforms on mobile to prevent flash */
+    -webkit-transform: none;
+    transform: none;
+    -webkit-perspective: none;
+    perspective: none;
+    /* Force hardware acceleration but simpler */
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+  
+  /* Reduce complex animations on mobile */
+  .motion-element-complex {
+    animation-duration: 0.3s !important;
+    transition-duration: 0.3s !important;
+  }
+  
+  /* Prevent flash during scroll animations */
+  .scroll-animation {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    will-change: auto;
+  }
+  
+  /* Optimize parallax elements */
+  .parallax-element {
+    -webkit-transform: none !important;
+    transform: none !important;
+    will-change: auto !important;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .motion-element {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .motion-element * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Performance optimizations for low-end devices */
+@media (max-width: 768px) and (max-resolution: 1.5dppx) {
+  .motion-element {
+    /* Disable expensive effects on low-res mobile */
+    filter: none !important;
+    backdrop-filter: none !important;
+    box-shadow: none !important;
+  }
+  
+  .blur-effect {
+    filter: none !important;
+  }
+  
+  .gradient-animation {
+    background: solid !important;
+  }
+}
+
+/* Fix for webkit transform flash */
+.webkit-transform-fix {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Container optimization for mobile */
+@media (max-width: 768px) {
+  .mobile-optimized-container {
+    contain: layout style paint;
+    will-change: auto;
+  }
+  
+  .mobile-optimized-container * {
+    will-change: auto;
+  }
+}
+
+/* Smooth scroll prevention flash */
+.smooth-scroll-container {
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+@media (max-width: 768px) {
+  .smooth-scroll-container {
+    scroll-behavior: auto;
+  }
+}

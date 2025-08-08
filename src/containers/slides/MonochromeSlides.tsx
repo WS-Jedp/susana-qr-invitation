@@ -232,7 +232,7 @@ Como esas personas que no necesitan alzar la voz para hacerse notar. <br />
                       transition={{ duration: 0.6, delay: 0.8 * 0.2 }}
                     />
                     <p className="text-lg text-charcoal leading-relaxed premium-text">
-                      No es un nombre cualquiera. <br />
+                      No es un nombre para cualquiera. <br />
                       Por eso, esta tampoco es una invitación cualquiera. <br />
                     </p>
                   </motion.div>
@@ -311,7 +311,7 @@ export const RomanticWhyYouSlide: React.FC<MonochromeSlideProps> = () => {
                 <div className="flex items-start space-x-3">
                   <div className="flex-1">
                     <p className="text-md md:text-lg text-charcoal leading-relaxed premium-text">
-                      Podría haber buscado tu número o soltado un comentario cualquiera en medio de una serie de sentadillas. 🤔
+                      Podría haber buscado tu número o soltado un comentario cualquiera en medio de una serie de sentadillas 🤔
                     </p>
                   </div>
                 </div>
@@ -350,7 +350,7 @@ export const RomanticWhyYouSlide: React.FC<MonochromeSlideProps> = () => {
                 <div className="flex items-start space-x-3">
                   <div className="flex-1">
                     <p className="text-md md:text-lg text-charcoal leading-relaxed premium-text">
-                     No para impresionarte. Sino para que sepas que, si decidí acercarme, es porque creo que conocerte vale el intento… y el gesto.
+                     Para así demostrarte que, si decidí acercarme, es porque creo que conocerte vale la pena… y el gesto.
                     </p>
                   </div>
                 </div>
@@ -370,7 +370,7 @@ export const RomanticWhyYouSlide: React.FC<MonochromeSlideProps> = () => {
                 <div className="flex items-start space-x-3">
                   <div className="flex-1">
                     <p className="text-xs text-charcoal leading-relaxed premium-text">
-                     (Además, hacer sitios web es más fácil que hablarle a alguien que te intimida un poco.. e interrumpirle su serie).
+                     (Además, hacer sitios web me es más fácil que hablarle a alguien que me intimida un poco.. e interrumpirla en su rutina).
                     </p>
                   </div>
                 </div>
@@ -404,7 +404,7 @@ export const PersonalCuriousFactsSlide: React.FC<MonochromeSlideProps> = () => {
     },
     {
       text: "Perros >>> gatos",
-      subtext: "(aunque a veces me traicionan).",
+      subtext: "(aunque me cambien por una pelota).",
       icon: "🐕"
     },
     {
@@ -1229,7 +1229,7 @@ export const CallToActionSlide: React.FC<MonochromeSlideProps> = () => {
             <p className="text-start text-base md:text-lg leading-relaxed font-serif italic">
               Si me respondes, genial. Si no… simplemente fingiré normalidad cada vez que coincidamos en el gym.
               <br />
-              (O cambiaré de horario, apellido e incluso de gimnasio como todo un estratega 🤠).
+              (O cambiaré de horario, apellido e incluso gimnasio 🤠).
             </p>
           </motion.div>
       </div>
