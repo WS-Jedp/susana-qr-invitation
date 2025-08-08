@@ -1023,7 +1023,7 @@ export const RomanticQuestionsSlide: React.FC<MonochromeSlideProps> = ({ slide }
             </motion.div>
             
             <motion.p 
-              className="text-xl md:text-2xl lg:text-5xl text-charcoal leading-relaxed large-quote select-none"
+              className="text-xl md:text-2xl lg:text-5xl text-charcoal leading-relaxed text-center select-none"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
@@ -1206,13 +1206,13 @@ export const CallToActionSlide: React.FC<MonochromeSlideProps> = () => {
         >
           <div className="text-charcoal">
             <p className="text-md md:text-xl leading-relaxed mb-4">
-              No soy de pedir números a desconocidos y menos si no es en persona.
+              No suelo pedir números, y mucho menos si no es en persona.
             </p>
             <p className="text-md md:text-xl leading-relaxed">
               Así que te dejaré mi email más abajo.
             </p>
             <span className='text-sm italic text-dark-gray'>
-              (Si, mi email, aqui prima el respeto ante todo)
+              (Sí, mi email. Aquí priorizamos el respeto y el profesionalismo antes que todo 🫡)
             </span>
           </div>
 
@@ -1311,13 +1311,38 @@ export const RomanticFinalSlide: React.FC<MonochromeSlideProps> = ({ slide }) =>
           <div className="space-y-4">
             <motion.a
               href="mailto:jedp082@gmail.com"
-              className="block text-xl md:text-2xl text-white hover:text-pure-white transition-colors duration-300 font-mono underline"
+              className="block text-xl md:text-2xl text-charcoal hover:text-deep-black transition-colors duration-300 font-mono underline"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
               jedp082@gmail.com
             </motion.a>
           </div>
+
+          {/* Instagram Disclaimer */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.8 }}
+            className="mt-12 pt-6 border-t border-charcoal/20"
+          >
+            <p className="text-xs text-dark-gray mb-3 italic">
+              Para respuestas más rápidas (y ligeramente menos formales), también estoy en Instagram.  
+              <br />
+              *Aviso legal:* la velocidad de respuesta aumenta, pero el nivel de seriedad puede verse comprometido.
+            </p>
+            <motion.a
+              href="https://instagram.com/jedp_82"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center space-x-2 text-xs text-charcoal hover:text-deep-black transition-colors duration-300"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <span>📱</span>
+              <span className="font-mono">@jedp_82</span>
+            </motion.a>
+          </motion.div>
       </div>
     </motion.div>
   );
