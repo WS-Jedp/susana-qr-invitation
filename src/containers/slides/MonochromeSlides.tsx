@@ -918,29 +918,101 @@ export const RomanticQuestionsSlide: React.FC<MonochromeSlideProps> = ({ slide }
 
       <div className="relative z-10 flex flex-col h-full">
         
-        {/* Header Section with Title */}
+        {/* Header Section with Title and Navigation */}
         <motion.div
           initial={{ y: -50, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8 }}
-          className="flex-shrink-0 pt-12 pb-8 px-8 text-center"
+          className="flex-shrink-0 pt-12 pb-8 px-8"
         >
-          <div className="w-12 h-12 mx-auto mb-6 bg-charcoal rounded-full flex items-center justify-center">
-            <span className="text-lg text-pure-white">👀</span>
+          <div className="flex items-center justify-between mb-6">
+            <div className="w-12 h-12 bg-charcoal rounded-full flex items-center justify-center">
+              <span className="text-lg text-pure-white">👀</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-deep-black hero-text flex-1 text-center">
+              {slide.title}
+            </h2>
+            <div className="w-12 h-12"> {/* Spacer for balance */}
+            </div>
           </div>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-deep-black hero-text">
-            {slide.title}
-          </h2>
+          
+          {/* Navigation Controls - Similar to FunFactsSlide */}
+          {slide.questions && slide.questions.length > 1 && (
+            <div className="flex items-center justify-between space-x-2 px-4 py-2">
+              <div className='flex flex-row flex-nowrap items-center justify-between'>
+                <div className="flex space-x-1">
+                  {slide.questions.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setHorizontalSlideIndex(index)}
+                      className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                        index === horizontalSlideIndex
+                          ? 'bg-charcoal w-6'
+                          : 'bg-charcoal/40 hover:bg-charcoal/60'
+                      }`}
+                      aria-label={`Pregunta ${index + 1}`}
+                    />
+                  ))}
+                </div>
+                
+                <span className="text-xs text-charcoal/70 ml-2 font-mono">
+                  {horizontalSlideIndex + 1}/{slide.questions.length}
+                </span>
+              </div>
+
+              <div className='flex flex-row flex-nowrap items-center justify-end space-x-2'>
+                <button
+                  onClick={() => setHorizontalSlideIndex(
+                    horizontalSlideIndex > 0 ? horizontalSlideIndex - 1 : slide.questions!.length - 1
+                  )}
+                  className="w-8 h-8 bg-charcoal/20 text-charcoal rounded-full flex items-center justify-center hover:bg-charcoal/30 transition-colors duration-200"
+                  aria-label="Anterior"
+                >
+                  ←
+                </button>
+                <button
+                  onClick={() => setHorizontalSlideIndex(
+                    horizontalSlideIndex < slide.questions!.length - 1 ? horizontalSlideIndex + 1 : 0
+                  )}
+                  className="w-8 h-8 bg-charcoal/20 text-charcoal rounded-full flex items-center justify-center hover:bg-charcoal/30 transition-colors duration-200"
+                  aria-label="Siguiente"
+                >
+                  →
+                </button>
+              </div>
+            </div>
+          )}
         </motion.div>
 
-        {/* Main Question Content - Centered */}
+        {/* Main Question Content with Swipe Gesture - Centered */}
         <motion.div
           key={horizontalSlideIndex}
-          initial={{ opacity: 0, scale: 0.9, y: 30 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.9, y: -30 }}
-          transition={{ duration: 0.6, ease: [0.215, 0.61, 0.355, 1] }}
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -50 }}
+          transition={{ duration: 0.5, ease: [0.215, 0.61, 0.355, 1] }}
           className="flex-1 flex items-center justify-center px-8"
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.3}
+          onDragEnd={(_, info) => {
+            const threshold = 50;
+            if (info.offset.x > threshold) {
+              // Swipe right - go to previous question
+              setHorizontalSlideIndex(
+                horizontalSlideIndex > 0 ? horizontalSlideIndex - 1 : slide.questions!.length - 1
+              );
+            } else if (info.offset.x < -threshold) {
+              // Swipe left - go to next question
+              setHorizontalSlideIndex(
+                horizontalSlideIndex < slide.questions!.length - 1 ? horizontalSlideIndex + 1 : 0
+              );
+            }
+          }}
+          whileDrag={{ 
+            scale: 0.98,
+            cursor: "grabbing"
+          }}
         >
           <div className="max-w-4xl mx-auto text-center">
             <motion.div
@@ -953,7 +1025,7 @@ export const RomanticQuestionsSlide: React.FC<MonochromeSlideProps> = ({ slide }
             </motion.div>
             
             <motion.p 
-              className="text-3xl md:text-4xl lg:text-5xl text-charcoal leading-relaxed large-quote"
+              className="text-3xl md:text-4xl lg:text-5xl text-charcoal leading-relaxed large-quote select-none"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
@@ -965,11 +1037,12 @@ export const RomanticQuestionsSlide: React.FC<MonochromeSlideProps> = ({ slide }
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ 
                     duration: 0.5, 
-                    delay: 0.3 + wordIndex * 0.1 
+                    delay: 0.3 + wordIndex * 0.05 
                   }}
                   className="inline-block mr-3"
                   whileHover={{ 
                     y: -5, 
+                    color: "#212529",
                     transition: { duration: 0.2 } 
                   }}
                 >
@@ -989,6 +1062,20 @@ export const RomanticQuestionsSlide: React.FC<MonochromeSlideProps> = ({ slide }
                 Pregunta {horizontalSlideIndex + 1} de {slide.questions.length}
               </motion.p>
             )}
+            
+            {/* Swipe Indicator */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 1 }}
+              className="flex justify-center mt-6 text-charcoal/20 text-sm"
+            >
+              <span className="flex items-center space-x-2">
+                <span>←</span>
+                <span>Desliza para navegar</span>
+                <span>→</span>
+              </span>
+            </motion.div>
           </div>
         </motion.div>
 
@@ -1060,34 +1147,6 @@ export const RomanticQuestionsSlide: React.FC<MonochromeSlideProps> = ({ slide }
           </div>
         </motion.div>
 
-        {/* Navigation Controls */}
-        {slide.questions && slide.questions.length > 1 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 1 }}
-            className="absolute left-6 right-6 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none"
-          >
-            <button
-              onClick={() => setHorizontalSlideIndex(
-                horizontalSlideIndex > 0 ? horizontalSlideIndex - 1 : slide.questions!.length - 1
-              )}
-              className="w-12 h-12 bg-charcoal text-pure-white rounded-full flex items-center justify-center pointer-events-auto hover:bg-deep-black transition-colors duration-300"
-              aria-label="Pregunta anterior"
-            >
-              ←
-            </button>
-            <button
-              onClick={() => setHorizontalSlideIndex(
-                horizontalSlideIndex < slide.questions!.length - 1 ? horizontalSlideIndex + 1 : 0
-              )}
-              className="w-12 h-12 bg-charcoal text-pure-white rounded-full flex items-center justify-center pointer-events-auto hover:bg-deep-black transition-colors duration-300"
-              aria-label="Siguiente pregunta"
-            >
-              →
-            </button>
-          </motion.div>
-        )}
       </div>
     </motion.div>
   );
