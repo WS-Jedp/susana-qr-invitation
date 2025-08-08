@@ -102,7 +102,7 @@ export const AudioPermissionModal: React.FC<AudioPermissionModalProps> = ({
             initial={{ y: 30, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-4xl md:text-5xl font-bold text-white mb-6 premium-title"
+            className="text-4xl md:text-5xl font-bold text-white mb-6"
           >
             ¿Lista para algo distinto?
           </motion.h1>

@@ -13,7 +13,7 @@
                     "Esta página es una invitación exclusiva y personal, creada especialmente para ti."
                 ],
                 "audio": {
-                    "src": "/susana-qr-invitation/audio/superstar.mp3",
+                    "src": "https://coffi-multimedia.s3.us-east-1.amazonaws.com/gymcrush/superstar.mp3",
                     "loop": {
                         "start": 1,
                         "end": 120
@@ -29,7 +29,7 @@
                     "Y bueno, porque todos odiamos ser interrumpidos cuando entrenamos, ¿no?"
                 ],
                 "audio": {
-                    "src": "/susana-qr-invitation/audio/superstar.mp3",
+                    "src": "https://coffi-multimedia.s3.us-east-1.amazonaws.com/gymcrush/superstar.mp3",
                     "loop": {
                         "start": 30,
                         "end": 90
@@ -45,7 +45,7 @@
                     "(Además, hacer sitios web es más fácil que hablarle a alguien que te intimida un poquito)."
                 ],
                 "audio": {
-                    "src": "/susana-qr-invitation/audio/superstar.mp3",
+                    "src": "https://coffi-multimedia.s3.us-east-1.amazonaws.com/gymcrush/superstar.mp3",
                     "loop": {
                         "start": 30,
                         "end": 90
@@ -57,7 +57,7 @@
                 "title": "Datos Curiosos sobre mí",
                 "type": "personal_facts",
                 "audio": {
-                    "src": "/susana-qr-invitation/audio/hold-on.mp3",
+                    "src": "https://coffi-multimedia.s3.us-east-1.amazonaws.com/gymcrush/hold-on.mp3",
                     "loop": {
                         "start": 0,
                         "end": 90
@@ -77,7 +77,7 @@
                 ],
                 "imagePlaceholder": "fun_facts_image.png",
                 "audio": {
-                    "src": "/susana-qr-invitation/audio/hold-on.mp3",
+                    "src": "https://coffi-multimedia.s3.us-east-1.amazonaws.com/gymcrush/hold-on.mp3",
                     "loop": {
                         "start": 0,
                         "end": 90
@@ -95,7 +95,7 @@
                     "¿Dijiste la verdad en la pregunta anterior? 😏"
                 ],
                 "audio": {
-                    "src": "/susana-qr-invitation/audio/questions.mp3",
+                    "src": "https://coffi-multimedia.s3.us-east-1.amazonaws.com/gymcrush/questions.mp3",
                     "loop": {
                         "start": 0,
                         "end": 60
@@ -107,7 +107,7 @@
                 "title": "Si te interesa conocerme",
                 "type": "call_to_action",
                 "audio": {
-                    "src": "/susana-qr-invitation/audio/questions.mp3",
+                    "src": "https://coffi-multimedia.s3.us-east-1.amazonaws.com/gymcrush/questions.mp3",
                     "loop": {
                         "start": 0,
                         "end": 60
@@ -120,7 +120,7 @@
                 "quote": "Gracias por llegar hasta aquí. Independientemente de tu respuesta, ya valió la pena crear esto solo por hacerte sonreír.",
                 "postscript": "PD: Espero que al menos esto te haya sacado una sonrisa genuina.",
                 "audio": {
-                    "src": "/susana-qr-invitation/audio/my-way.mp3",
+                    "src": "https://coffi-multimedia.s3.us-east-1.amazonaws.com/gymcrush/my-way.mp3",
                     "loop": {
                         "start": 192,
                         "end": 300

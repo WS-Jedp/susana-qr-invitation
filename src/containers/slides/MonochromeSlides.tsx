@@ -925,15 +925,13 @@ export const RomanticQuestionsSlide: React.FC<MonochromeSlideProps> = ({ slide }
           transition={{ duration: 0.8 }}
           className="flex-shrink-0 pt-12 pb-8 px-8"
         >
-          <div className="flex items-center justify-between mb-6">
+          <div className="w-full flex items-center justify-between mb-6 space-x-2">
             <div className="w-12 h-12 bg-charcoal rounded-full flex items-center justify-center">
               <span className="text-lg text-pure-white">👀</span>
             </div>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-deep-black hero-text flex-1 text-center">
+            <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-deep-black hero-text flex-1 text-end">
               {slide.title}
             </h2>
-            <div className="w-12 h-12"> {/* Spacer for balance */}
-            </div>
           </div>
           
           {/* Navigation Controls - Similar to FunFactsSlide */}
@@ -1019,13 +1017,13 @@ export const RomanticQuestionsSlide: React.FC<MonochromeSlideProps> = ({ slide }
               className="mb-8"
               whileHover={{ scale: 1.05, transition: { duration: 0.3 } }}
             >
-              <div className="w-16 h-16 mx-auto mb-8 bg-deep-black text-pure-white rounded-full flex items-center justify-center font-bold text-xl">
+              <div className="w-12 h-12 mx-auto mb-8 bg-deep-black text-pure-white rounded-full flex items-center justify-center font-bold text-lg">
                 #{horizontalSlideIndex + 1}
               </div>
             </motion.div>
             
             <motion.p 
-              className="text-3xl md:text-4xl lg:text-5xl text-charcoal leading-relaxed large-quote select-none"
+              className="text-xl md:text-2xl lg:text-5xl text-charcoal leading-relaxed large-quote select-none"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
@@ -1057,7 +1055,7 @@ export const RomanticQuestionsSlide: React.FC<MonochromeSlideProps> = ({ slide }
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.6, delay: 0.8 }}
-                className="text-lg text-dark-gray mt-8 font-serif italic"
+                className="text-sm text-dark-gray mt-8 font-serif italic"
               >
                 Pregunta {horizontalSlideIndex + 1} de {slide.questions.length}
               </motion.p>
@@ -1068,7 +1066,7 @@ export const RomanticQuestionsSlide: React.FC<MonochromeSlideProps> = ({ slide }
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 1 }}
-              className="flex justify-center mt-6 text-charcoal/20 text-sm"
+              className="flex justify-center mt-6 text-charcoal/20 text-xs"
             >
               <span className="flex items-center space-x-2">
                 <span>←</span>
@@ -1313,7 +1311,7 @@ export const RomanticFinalSlide: React.FC<MonochromeSlideProps> = ({ slide }) =>
           <div className="space-y-4">
             <motion.a
               href="mailto:jedp082@gmail.com"
-              className="block text-xl md:text-2xl text-white hover:text-pure-white transition-colors duration-300 font-mono"
+              className="block text-xl md:text-2xl text-white hover:text-pure-white transition-colors duration-300 font-mono underline"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
