@@ -30,6 +30,12 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  
+  /* Mobile performance optimizations */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /* Paper Texture Background */
@@ -107,19 +113,23 @@
 .border-dark-gray { border-color: var(--color-dark-gray); }
 .border-charcoal { border-color: var(--color-charcoal); }
 
-/* Modern animations and transitions */
+/* Modern animations and transitions - Mobile Optimized */
 .fade-in {
-  animation: fadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  animation: fadeIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: opacity;
 }
 
 .slide-up {
-  animation: slideUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  animation: slideUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform, opacity;
 }
 
 .scale-in {
-  animation: scaleIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform, opacity;
 }
 
+/* Performance-optimized keyframes */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -128,22 +138,37 @@
 @keyframes slideUp {
   from { 
     opacity: 0;
-    transform: translateY(30px);
+    transform: translate3d(0, 30px, 0);
   }
   to { 
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 @keyframes scaleIn {
   from { 
     opacity: 0;
-    transform: scale(0.9);
+    transform: scale3d(0.9, 0.9, 1);
   }
   to { 
     opacity: 1;
-    transform: scale(1);
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+/* Mobile-specific performance optimizations */
+@media (max-width: 768px) {
+  .fade-in {
+    animation-duration: 0.3s;
+  }
+  
+  .slide-up {
+    animation-duration: 0.4s;
+  }
+  
+  .scale-in {
+    animation-duration: 0.3s;
   }
 }
 
@@ -154,6 +179,7 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   backdrop-filter: blur(10px);
   border: 1px solid var(--color-medium-gray);
+  will-change: transform;
 }
 
 .premium-card-dark {
@@ -162,18 +188,21 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(10px);
   border: 1px solid var(--color-dark-gray);
+  will-change: transform;
 }
 
 .glass-effect {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   border: 1px solid var(--color-light-gray);
+  will-change: transform;
 }
 
 .glass-effect-dark {
   background: rgba(52, 58, 64, 0.95);
   backdrop-filter: blur(10px);
   border: 1px solid var(--color-dark-gray);
+  will-change: transform;
 }
 
 /* Typography classes - Professional */
@@ -333,4 +362,64 @@ a {
 
 a:hover {
   color: var(--color-deep-black);
+}
+
+/* Mobile Performance Optimizations */
+* {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+/* Hardware acceleration for smooth animations */
+.motion-element {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/* Reduce animations on low-performance devices */
+@media (max-width: 768px) {
+  * {
+    transition-duration: 0.2s !important;
+    animation-duration: 0.3s !important;
+  }
+  
+  .paper-texture::before {
+    display: none; /* Remove texture on mobile for better performance */
+  }
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* iOS Safari specific optimizations */
+@supports (-webkit-touch-callout: none) {
+  body {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: none;
+  }
+  
+  .motion-element {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* Android Chrome specific optimizations */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  .motion-element {
+    will-change: transform;
+    transform: translateZ(0);
+  }
 }

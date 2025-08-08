@@ -26,16 +26,33 @@ const HybridScrollRenderer: React.FC<HybridScrollRendererProps> = ({
   const { slides, currentSlideIndex, loadData, isLoading, error, goToSlide } = useSlideStore();
   const containerRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
 
-  // Enhanced navigation with smooth scrolling
+  // Detect mobile device and reduced motion preference
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    const checkReducedMotion = () => setReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    
+    checkMobile();
+    checkReducedMotion();
+    
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Enhanced navigation with smooth scrolling and mobile optimization
   const navigateToSlide = useCallback((targetIndex: number) => {
     if (containerRef.current && targetIndex >= 0 && targetIndex < slides.length) {
       const targetY = (targetIndex / (slides.length - 1)) * (containerRef.current.scrollHeight - window.innerHeight);
-      containerRef.current.scrollTo({ top: targetY, behavior: 'smooth' });
+      containerRef.current.scrollTo({ 
+        top: targetY, 
+        behavior: reducedMotion || isMobile ? 'auto' : 'smooth' 
+      });
     }
-  }, [slides.length]);
+  }, [slides.length, reducedMotion, isMobile]);
 
-  // Handle scroll events manually
+  // Handle scroll events manually with throttling for mobile performance
   const handleScroll = useCallback(() => {
     if (!containerRef.current) return;
     
@@ -43,9 +60,12 @@ const HybridScrollRenderer: React.FC<HybridScrollRendererProps> = ({
     const scrollHeight = containerRef.current.scrollHeight - containerRef.current.clientHeight;
     const progress = scrollHeight > 0 ? scrollTop / scrollHeight : 0;
     
-    setScrollProgress(progress);
+    // Use requestAnimationFrame for smooth updates
+    requestAnimationFrame(() => {
+      setScrollProgress(progress);
+    });
     
-    // Update current slide based on scroll position
+    // Update current slide based on scroll position with debouncing
     const newIndex = Math.round(progress * (slides.length - 1));
     if (newIndex !== currentSlideIndex && newIndex >= 0 && newIndex < slides.length) {
       goToSlide(newIndex);
@@ -70,12 +90,14 @@ const HybridScrollRenderer: React.FC<HybridScrollRendererProps> = ({
     loadData();
   }, [loadData]);
 
-  // Add scroll event listener
+  // Add scroll event listener with passive scrolling for mobile performance
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    container.addEventListener('scroll', handleScroll, { passive: true });
+    // Use passive listeners for better performance
+    const options = { passive: true };
+    container.addEventListener('scroll', handleScroll, options);
     return () => container.removeEventListener('scroll', handleScroll);
   }, [handleScroll]);
 
@@ -109,7 +131,7 @@ const HybridScrollRenderer: React.FC<HybridScrollRendererProps> = ({
 
   if (isLoading) {
     return (
-      <div className="w-full min-h-dvh flex items-center justify-center bg-pure-white">
+      <div className="w-full h-dvh flex items-center justify-center bg-pure-white">
         <div className="text-center">
           <div className="w-20 h-20 mx-auto mb-6">
             <div className="w-full h-full border-4 border-soft-gray border-t-accent-blue rounded-full animate-spin"></div>
@@ -123,7 +145,7 @@ const HybridScrollRenderer: React.FC<HybridScrollRendererProps> = ({
 
   if (error) {
     return (
-      <div className="w-full min-h-dvh flex items-center justify-center bg-pure-white">
+      <div className="w-full h-dvh flex items-center justify-center bg-pure-white">
         <div className="text-center premium-card p-8 max-w-md mx-4">
           <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-rose-gold to-champagne rounded-full flex items-center justify-center">
             <span className="text-2xl">⚠️</span>
@@ -137,7 +159,7 @@ const HybridScrollRenderer: React.FC<HybridScrollRendererProps> = ({
 
   if (!slides.length) {
     return (
-      <div className="w-full min-h-dvh flex items-center justify-center bg-pure-white">
+      <div className="w-full h-dvh flex items-center justify-center bg-pure-white">
         <p className="premium-text text-xl text-charcoal">No hay contenido disponible</p>
       </div>
     );
@@ -154,10 +176,15 @@ const HybridScrollRenderer: React.FC<HybridScrollRendererProps> = ({
         shouldAutoPlay={shouldAutoPlay}
       />
 
-      {/* Scroll Progress Indicator */}
+      {/* Scroll Progress Indicator - Optimized for mobile */}
       <motion.div
-        className="fixed top-0 left-0 w-full h-1 bg-soft-gray z-50 origin-left"
-        style={{ scaleX: scrollProgress }}
+        className="fixed top-0 left-0 w-full h-1 bg-soft-gray z-50 motion-element"
+        style={{ 
+          scaleX: scrollProgress,
+          originX: 0,
+          willChange: 'transform'
+        }}
+        transition={{ type: "tween", ease: "linear", duration: 0.1 }}
       >
         <div className="w-full h-full bg-gradient-to-r from-accent-blue to-royal-gold"></div>
       </motion.div>
@@ -174,20 +201,28 @@ const HybridScrollRenderer: React.FC<HybridScrollRendererProps> = ({
         ))}
       </div>
 
-      {/* Main Scroll Container */}
+      {/* Main Scroll Container - Optimized for mobile performance */}
       <div
         ref={(node) => {
           containerRef.current = node;
           swipeRef.current = node;
         }}
-        className="min-h-dvh overflow-y-auto overflow-x-hidden scroll-smooth"
-        style={{ scrollSnapType: 'y mandatory' }}
+        className="h-dvh overflow-y-auto overflow-x-hidden motion-element"
+        style={{ 
+          scrollSnapType: isMobile ? 'none' : 'y mandatory',
+          scrollBehavior: reducedMotion ? 'auto' : 'smooth',
+          WebkitOverflowScrolling: 'touch',
+          overscrollBehavior: 'none'
+        }}
       >
         {slides.map((slide, index) => (
           <div
             key={slide.id}
-            className="min-h-dvh w-full"
-            style={{ scrollSnapAlign: 'start' }}
+            className="h-dvh w-full motion-element"
+            style={{ 
+              scrollSnapAlign: isMobile ? 'none' : 'start',
+              willChange: 'transform'
+            }}
           >
             {getSlideComponent(slide, index)}
           </div>

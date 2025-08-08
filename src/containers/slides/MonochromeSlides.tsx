@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'motion/react';
 import type { Slide } from '../../store/useSlideStore';
 import { useSlideStore } from '../../store/useSlideStore';
+import { useOptimizedAnimations } from '../../hooks/useMobileOptimization';
 
 interface MonochromeSlideProps {
   slide: Slide;
@@ -12,37 +13,46 @@ interface MonochromeSlideProps {
 // Monochrome Welcome Slide with Letter Paper Texture
 export const RomanticWelcomeSlide: React.FC<MonochromeSlideProps> = ({ slide }) => {
   const ref = useRef<HTMLDivElement>(null);
+  const { isMobile, getOptimizedConfig, getOptimizedTransform } = useOptimizedAnimations();
+
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"]
   });
 
-  const y1 = useTransform(scrollYProgress, [0, 1], [0, -80]);
-  const y2 = useTransform(scrollYProgress, [0, 1], [0, -40]);
+  // Reduced parallax distances for mobile performance
+  const y1 = useTransform(scrollYProgress, [0, 1], [0, getOptimizedTransform(-60)]);
+  const y2 = useTransform(scrollYProgress, [0, 1], [0, getOptimizedTransform(-30)]);
+
+  const baseAnimConfig = { duration: 0.6 };
+  const animConfig = getOptimizedConfig(baseAnimConfig);
 
   return (
     <motion.div
       ref={ref}
-      className="relative min-h-dvh flex items-center justify-center overflow-hidden bg-pure-white letter-paper"
+      className="relative h-dvh flex items-center justify-center overflow-hidden bg-pure-white letter-paper motion-element"
+      style={{ willChange: 'transform' }}
     >
-      {/* Subtle Background Elements */}
-      <div className="absolute inset-0">
-        <motion.div
-          className="absolute top-1/4 right-1/3 w-64 h-64 bg-black/5 rounded-full blur-3xl"
-          style={{ y: y1 }}
-        />
-        <motion.div
-          className="absolute bottom-1/4 left-1/4 w-48 h-48 bg-black/3 rounded-full blur-2xl"
-          style={{ y: y2 }}
-        />
-      </div>
+      {/* Subtle Background Elements - Reduced on mobile */}
+      {!isMobile && (
+        <div className="absolute inset-0">
+          <motion.div
+            className="absolute top-1/4 right-1/3 w-64 h-64 bg-black/5 rounded-full blur-3xl motion-element"
+            style={{ y: y1, willChange: 'transform' }}
+          />
+          <motion.div
+            className="absolute bottom-1/4 left-1/4 w-48 h-48 bg-black/3 rounded-full blur-2xl motion-element"
+            style={{ y: y2, willChange: 'transform' }}
+          />
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="relative z-10 w-full max-w-4xl mx-auto px-8 h-full flex flex-col justify-center">
         {/* Header Section */}
         <motion.div
-          style={{ y: y1 }}
-          className="text-center mb-12"
+          style={{ y: y1, willChange: 'transform' }}
+          className="text-center mb-12 motion-element"
         >
 
           {/* Title with Elegant Typography */}
@@ -50,13 +60,15 @@ export const RomanticWelcomeSlide: React.FC<MonochromeSlideProps> = ({ slide }) 
             {slide.title.split(" ").map((word, wordIndex) => (
               <motion.span
                 key={wordIndex}
-                className="inline-block mr-4"
-                initial={{ opacity: 0, y: 50 }}
+                className="inline-block mr-4 motion-element"
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "0px 0px -50px 0px" }}
                 transition={{
-                  duration: 0.6,
-                  delay: wordIndex * 0.15,
-                  ease: [0.215, 0.61, 0.355, 1],
+                  duration: animConfig.duration,
+                  ease: animConfig.ease,
+                  type: animConfig.type,
+                  delay: wordIndex * 0.1,
                 }}
               >
                 {word}*
@@ -68,8 +80,9 @@ export const RomanticWelcomeSlide: React.FC<MonochromeSlideProps> = ({ slide }) 
           <motion.div
             initial={{ width: 0 }}
             whileInView={{ width: "4rem" }}
-            transition={{ duration: 1, delay: 0.8 }}
-            className=" h-px bg-charcoal mb-4"
+            viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+            transition={animConfig}
+            className="h-px bg-charcoal mb-4 motion-element"
           />
 
           <div className='space-y-1'>
@@ -94,11 +107,12 @@ export const RomanticWelcomeSlide: React.FC<MonochromeSlideProps> = ({ slide }) 
 
         {/* Quote Section */}
         <motion.div
-          style={{ y: y2 }}
+          style={{ y: y2, willChange: 'transform' }}
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          className="p-8 md:p-12 max-w-3xl mx-auto"
+          viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+          transition={{ ...animConfig, delay: 0.2 }}
+          className="p-8 md:p-12 max-w-3xl mx-auto motion-element"
         >
           <blockquote className="text-lg md:text-2xl text-charcoal leading-relaxed mb-6 font-serif italic text-start">
             Pero no siempre es fácil.
@@ -144,7 +158,7 @@ export const RomanticReasonSlide: React.FC<MonochromeSlideProps> = () => {
   return (
     <motion.div
       ref={ref}
-      className="relative min-h-dvh flex items-center justify-center bg-pure-white letter-paper"
+      className="relative h-dvh flex items-center justify-center bg-pure-white letter-paper"
     >
       <div className="relative z-10 max-w-6xl mx-auto px-8 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center h-full">
         {/* Title Section */}
@@ -251,7 +265,7 @@ export const RomanticWhyYouSlide: React.FC<MonochromeSlideProps> = () => {
     <motion.div
       ref={ref}
       style={{ scale }}
-      className="relative min-h-dvh flex flex-col items-center justify-between bg-light-gray letter-paper"
+      className="relative h-dvh flex flex-col items-center justify-between bg-light-gray letter-paper"
     >
       <div className="relative z-10 max-w-5xl mx-auto px-8 h-full flex flex-col justify-between">
         {/* Title with Professional Icon */}
@@ -403,7 +417,7 @@ export const PersonalCuriousFactsSlide: React.FC<MonochromeSlideProps> = () => {
   return (
     <motion.div
       ref={ref}
-      className="relative min-h-dvh flex items-center justify-center bg-charcoal paper-texture overflow-hidden"
+      className="relative h-dvh flex items-center justify-center bg-charcoal paper-texture overflow-hidden"
     >
       {/* Animated Background Pattern */}
       <div className="absolute inset-0">
@@ -556,7 +570,7 @@ export const RomanticFunFactsSlide: React.FC<MonochromeSlideProps> = ({ slide })
   return (
     <motion.div
       ref={ref}
-      className="relative min-h-dvh flex flex-col bg-charcoal paper-texture overflow-hidden"
+      className="relative h-dvh flex flex-col bg-charcoal paper-texture overflow-hidden"
     >
       {/* Animated Background Pattern */}
       <div className="absolute inset-0 opacity-10">
@@ -877,7 +891,7 @@ export const RomanticQuestionsSlide: React.FC<MonochromeSlideProps> = ({ slide }
   return (
     <motion.div
       ref={ref}
-      className="relative min-h-dvh flex flex-col bg-pure-white letter-paper overflow-hidden"
+      className="relative h-dvh flex flex-col bg-pure-white letter-paper overflow-hidden"
     >
       {/* Subtle Background Pattern */}
       <div className="absolute inset-0 opacity-5">
@@ -1086,7 +1100,7 @@ export const CallToActionSlide: React.FC<MonochromeSlideProps> = () => {
   return (
     <motion.div
       ref={ref}
-      className="relative min-h-dvh flex items-center justify-center bg-light-gray letter-paper overflow-hidden"
+      className="relative h-dvh flex items-center justify-center bg-light-gray letter-paper overflow-hidden"
     >
       {/* Subtle Background Elements */}
       <div className="absolute inset-0">
@@ -1173,7 +1187,7 @@ export const RomanticFinalSlide: React.FC<MonochromeSlideProps> = ({ slide }) =>
   return (
     <motion.div
       ref={ref}
-      className="relative min-h-dvh flex items-center justify-center bg-light-gray letter-paper overflow-hidden"
+      className="relative h-dvh flex items-center justify-center bg-light-gray letter-paper overflow-hidden"
     >
       {/* Floating elements */}
       <div className="absolute inset-0 overflow-hidden">
