@@ -22,6 +22,7 @@ export const useAdvancedAudioPlayer = (audioConfig?: AudioConfig, isEnabled: boo
   const intervalRef = useRef<number | null>(null);
   const fadeIntervalRef = useRef<number | null>(null);
   const transitionTimeoutRef = useRef<number | null>(null);
+  const debounceTimeoutRef = useRef<number | null>(null);
 
   // Fade audio in or out
   const fadeAudio = useCallback((audio: HTMLAudioElement, direction: 'in' | 'out', duration: number = 1000): Promise<void> => {
@@ -57,7 +58,13 @@ export const useAdvancedAudioPlayer = (audioConfig?: AudioConfig, isEnabled: boo
     audio.preload = 'auto';
     audio.volume = 0;
     audio.crossOrigin = 'anonymous';
+    
+    // Set additional properties for better loading
+    audio.muted = false; // Ensure not muted
+    
+    // Set source after configuration
     audio.src = src;
+    
     return audio;
   }, []);
 
@@ -95,49 +102,100 @@ export const useAdvancedAudioPlayer = (audioConfig?: AudioConfig, isEnabled: boo
     setIsTransitioning(true);
     setIsLoading(true);
 
-    // Prepare new audio
-    const newAudio = createAudioElement(newConfig.src);
-    
-    // Wait for new audio to be ready
-    await new Promise<void>((resolve, reject) => {
-      const timeout = setTimeout(() => reject(new Error('Audio load timeout')), 10000);
+    try {
+      // Prepare new audio
+      const newAudio = createAudioElement(newConfig.src);
       
-      newAudio.addEventListener('canplaythrough', () => {
-        clearTimeout(timeout);
-        resolve();
+      // Wait for new audio to be ready with multiple event listeners for better reliability
+      await new Promise<void>((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          console.warn(`Audio load timeout for: ${newConfig.src}`);
+          reject(new Error('Audio load timeout'));
+        }, 15000); // Increased timeout to 15 seconds
+        
+        let resolved = false;
+        
+        const resolveOnce = () => {
+          if (!resolved) {
+            resolved = true;
+            clearTimeout(timeout);
+            resolve();
+          }
+        };
+        
+        // Multiple events to catch when audio is ready
+        newAudio.addEventListener('canplaythrough', resolveOnce, { once: true });
+        newAudio.addEventListener('canplay', resolveOnce, { once: true });
+        newAudio.addEventListener('loadeddata', resolveOnce, { once: true });
+        
+        newAudio.addEventListener('error', (error) => {
+          if (!resolved) {
+            resolved = true;
+            clearTimeout(timeout);
+            console.error('Audio load error:', error);
+            reject(new Error('Audio load failed'));
+          }
+        }, { once: true });
+        
+        // Force load the audio
+        newAudio.load();
       });
+
+      nextAudioRef.current = newAudio;
+
+      // If there's current audio playing, fade it out
+      if (currentAudioRef.current && isPlaying) {
+        await stopAudio(currentAudioRef.current);
+      }
+
+      // Switch to new audio
+      currentAudioRef.current = newAudio;
+      setCurrentAudioSrc(newConfig.src);
+      setIsLoading(false);
+
+      // Start new audio if should be playing
+      if (hasUserInteracted && shouldAutoPlay) {
+        await startAudio(newAudio, newConfig);
+      }
+
+      setIsTransitioning(false);
+    } catch (error) {
+      console.error('Failed to transition to new audio:', error);
+      // Don't let the error stop the app, just log it and continue
+      setIsLoading(false);
+      setIsTransitioning(false);
       
-      newAudio.addEventListener('error', () => {
-        clearTimeout(timeout);
-        reject(new Error('Audio load failed'));
-      });
-    });
-
-    nextAudioRef.current = newAudio;
-
-    // If there's current audio playing, fade it out
-    if (currentAudioRef.current && isPlaying) {
-      await stopAudio(currentAudioRef.current);
+      // If we failed to load new audio but have current audio, keep it playing
+      if (currentAudioRef.current && !isPlaying && hasUserInteracted && shouldAutoPlay) {
+        try {
+          await startAudio(currentAudioRef.current, { src: currentAudioSrc!, loop: newConfig.loop });
+        } catch (fallbackError) {
+          console.warn('Fallback audio start failed:', fallbackError);
+        }
+      }
     }
-
-    // Switch to new audio
-    currentAudioRef.current = newAudio;
-    setCurrentAudioSrc(newConfig.src);
-    setIsLoading(false);
-
-    // Start new audio if should be playing
-    if (hasUserInteracted && shouldAutoPlay) {
-      await startAudio(newAudio, newConfig);
-    }
-
-    setIsTransitioning(false);
   }, [currentAudioSrc, createAudioElement, stopAudio, startAudio, isPlaying, hasUserInteracted, shouldAutoPlay]);
 
-  // Initialize or change audio when config changes
+  // Initialize or change audio when config changes with debouncing
   useEffect(() => {
     if (audioConfig?.src && isEnabled) {
-      transitionToNewAudio(audioConfig);
+      // Clear any pending transition
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+      
+      // Debounce rapid audio changes (e.g., when scrolling quickly through slides)
+      debounceTimeoutRef.current = window.setTimeout(() => {
+        console.log('Transitioning to audio:', audioConfig.src);
+        transitionToNewAudio(audioConfig);
+      }, 200); // 200ms debounce
     }
+    
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
   }, [audioConfig?.src, isEnabled, transitionToNewAudio, audioConfig]);
 
   // Handle loop timing for current audio
@@ -214,6 +272,7 @@ export const useAdvancedAudioPlayer = (audioConfig?: AudioConfig, isEnabled: boo
     const interval = intervalRef.current;
     const fadeInterval = fadeIntervalRef.current;
     const transitionTimeout = transitionTimeoutRef.current;
+    const debounceTimeout = debounceTimeoutRef.current;
 
     return () => {
       if (currentAudio) {
@@ -230,6 +289,9 @@ export const useAdvancedAudioPlayer = (audioConfig?: AudioConfig, isEnabled: boo
       }
       if (transitionTimeout) {
         clearTimeout(transitionTimeout);
+      }
+      if (debounceTimeout) {
+        clearTimeout(debounceTimeout);
       }
     };
   }, []);
