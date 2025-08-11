@@ -52,35 +52,26 @@ export const MinimalAudioPlayer: React.FC<MinimalAudioPlayerProps> = ({
         transition={{ duration: 0.2 }}
       >
         {/* Background Blur */}
-        <div className="absolute inset-0 bg-white/10 backdrop-blur-md rounded-full shadow-lg" />
+        <div className="absolute inset-0 bg-white/10 backdrop-blur-md rounded-full shadow-lg pointer-events-none" />
         
         {/* Play/Pause Button */}
-        <motion.button
-          onClick={toggle}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggle();
+          }}
           disabled={!canPlay || isLoading || isTransitioning}
           className={`
             relative w-12 h-12 rounded-full flex items-center justify-center
-            transition-all duration-500 overflow-hidden
+            transition-all duration-500 overflow-hidden z-10
             ${canPlay && !isLoading && !isTransitioning
-              ? 'bg-charcoal/80 hover:bg-charcoal text-white shadow-lg hover:shadow-xl' 
+              ? 'bg-charcoal/80 hover:bg-charcoal text-white shadow-lg hover:shadow-xl cursor-pointer' 
               : 'bg-gray-400/50 text-gray-300 cursor-not-allowed'
             }
             ${isTransitioning ? 'ring-2 ring-orange-400/50 ring-offset-2 ring-offset-transparent' : ''}
           `}
-          animate={{
-            scale: isTransitioning ? [1, 1.05, 1] : 1,
-          }}
-          transition={{
-            scale: {
-              duration: isTransitioning ? 1.5 : 0.2,
-              repeat: isTransitioning ? Infinity : 0,
-              ease: "easeInOut"
-            }
-          }}
-          whileTap={{ scale: 0.95 }}
-          whileHover={{ 
-            boxShadow: "0 8px 25px rgba(0,0,0,0.15)" 
-          }}
+          style={{ pointerEvents: 'auto', position: 'relative', zIndex: 1000 }}
         >
           <AnimatePresence mode="wait">
             {isLoading || isTransitioning ? (
@@ -106,10 +97,19 @@ export const MinimalAudioPlayer: React.FC<MinimalAudioPlayerProps> = ({
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.5 }}
                 transition={{ duration: 0.2 }}
-                className="flex items-center justify-center"
+                whileHover={{ scale: 1.1 }}
+                className="flex items-center justify-center gap-1"
               >
-                <div className="w-1.5 h-4 bg-black/60 rounded-sm mr-1" />
-                <div className="w-1.5 h-4 bg-black/60 rounded-sm" />
+                <motion.div 
+                  className="w-1.5 h-4 bg-black/60 rounded-[2px] shadow-sm"
+                  whileHover={{ backgroundColor: "#f8f9fa" }}
+                  transition={{ duration: 0.1 }}
+                />
+                <motion.div 
+                  className="w-1.5 h-4 bg-black/60 rounded-[2px] shadow-sm"
+                  whileHover={{ backgroundColor: "#f8f9fa" }}
+                  transition={{ duration: 0.1 }}
+                />
               </motion.div>
             ) : (
               <motion.div
@@ -118,11 +118,29 @@ export const MinimalAudioPlayer: React.FC<MinimalAudioPlayerProps> = ({
                 animate={{ opacity: 1, scale: 1, x: 0 }}
                 exit={{ opacity: 0, scale: 0.5 }}
                 transition={{ duration: 0.2 }}
-                className="w-0 h-0 border-l-[6px] border-l-white border-t-[4px] border-t-transparent border-b-[4px] border-b-transparent ml-0.5"
-              />
+                whileHover={{ scale: 1.1 }}
+                className="relative ml-0.5"
+              >
+                {/* Professional triangular play icon */}
+                <motion.svg 
+                  width="12" 
+                  height="12" 
+                  viewBox="0 0 12 12" 
+                  fill="none" 
+                  className="drop-shadow-sm"
+                  whileHover={{ filter: "brightness(1.1)" }}
+                  transition={{ duration: 0.1 }}
+                >
+                  <path 
+                    d="M2.5 1.5C2.5 1.2 2.7 1 3 1C3.1 1 3.2 1 3.3 1.1L9.8 5.1C10 5.2 10.1 5.4 10.1 5.6C10.1 5.8 10 6 9.8 6.1L3.3 10.1C3.2 10.2 3.1 10.2 3 10.2C2.7 10.2 2.5 10 2.5 9.7V1.5Z" 
+                    fill="black"
+                    className="drop-shadow-sm"
+                  />
+                </motion.svg>
+              </motion.div>
             )}
           </AnimatePresence>
-        </motion.button>
+        </button>
 
         {/* Playing Indicator */}
         <AnimatePresence>

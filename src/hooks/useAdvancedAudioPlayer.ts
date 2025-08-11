@@ -336,33 +336,80 @@ export const useAdvancedAudioPlayer = (audioConfig?: AudioConfig, isEnabled: boo
 
   // Play function
   const play = useCallback(async () => {
+    console.log('Play function called', { 
+      hasAudio: !!currentAudioRef.current, 
+      hasConfig: !!audioConfig, 
+      isLoading, 
+      hasUserInteracted, 
+      isTransitioning 
+    });
+    
     if (currentAudioRef.current && audioConfig && !isLoading && hasUserInteracted && !isTransitioning) {
-      await startAudio(currentAudioRef.current, audioConfig);
+      try {
+        await startAudio(currentAudioRef.current, audioConfig);
+      } catch (error) {
+        console.warn('Play function failed:', error);
+      }
+    } else {
+      console.warn('Play function conditions not met');
     }
   }, [audioConfig, isLoading, hasUserInteracted, isTransitioning, startAudio]);
 
   // Pause function
   const pause = useCallback(async () => {
+    console.log('Pause function called', { 
+      hasAudio: !!currentAudioRef.current, 
+      isTransitioning 
+    });
+    
     if (currentAudioRef.current && !isTransitioning) {
-      await stopAudio(currentAudioRef.current);
-      setIsPlaying(false);
+      try {
+        await stopAudio(currentAudioRef.current);
+        setIsPlaying(false);
+      } catch (error) {
+        console.warn('Pause function failed:', error);
+        // Fallback: try to pause directly
+        currentAudioRef.current.pause();
+        setIsPlaying(false);
+      }
+    } else {
+      console.warn('Pause function conditions not met');
     }
   }, [isTransitioning, stopAudio]);
 
   // Toggle function
-  const toggle = useCallback(() => {
-    console.log('Toggle audio playback');
+  const toggle = useCallback(async () => {
+    console.log('Toggle audio playback', { isPlaying, hasUserInteracted, isTransitioning, canPlay: !!audioConfig });
+    
+    // If user hasn't interacted yet, set the flag and start playing
     if (!hasUserInteracted) {
       setHasUserInteracted(true);
+      // Start playing after setting user interaction
+      if (currentAudioRef.current && audioConfig && !isLoading && !isTransitioning) {
+        try {
+          await startAudio(currentAudioRef.current, audioConfig);
+        } catch (error) {
+          console.warn('Failed to start audio on first interaction:', error);
+        }
+      }
       return;
     }
     
+    // Normal toggle behavior for subsequent clicks
     if (isPlaying && !isTransitioning) {
-      pause();
-    } else if (!isTransitioning) {
-      play();
+      try {
+        await pause();
+      } catch (error) {
+        console.warn('Failed to pause audio:', error);
+      }
+    } else if (!isTransitioning && !isLoading) {
+      try {
+        await play();
+      } catch (error) {
+        console.warn('Failed to play audio:', error);
+      }
     }
-  }, [isPlaying, hasUserInteracted, isTransitioning, play, pause]);
+  }, [isPlaying, hasUserInteracted, isTransitioning, isLoading, audioConfig, currentAudioRef, startAudio, play, pause]);
 
   // Cleanup on unmount
   useEffect(() => {
