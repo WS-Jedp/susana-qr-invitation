@@ -351,6 +351,7 @@ export const useAdvancedAudioPlayer = (audioConfig?: AudioConfig, isEnabled: boo
 
   // Toggle function
   const toggle = useCallback(() => {
+    console.log('Toggle audio playback');
     if (!hasUserInteracted) {
       setHasUserInteracted(true);
       return;

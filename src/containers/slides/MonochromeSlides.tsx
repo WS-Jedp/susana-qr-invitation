@@ -370,7 +370,7 @@ export const RomanticWhyYouSlide: React.FC<MonochromeSlideProps> = () => {
                 <div className="flex items-start space-x-3">
                   <div className="flex-1">
                     <p className="text-xs text-charcoal leading-relaxed premium-text">
-                     (Además, hacer sitios web me es más fácil que hablarle a alguien que me intimida un poco.. e interrumpirla en su rutina).
+                      (Además, hacer sitios web es más fácil que interrumpir una serie de sentadillas… todos sabemos que eso es ilegal en al menos 14 países).
                     </p>
                   </div>
                 </div>
@@ -388,7 +388,7 @@ export const PersonalCuriousFactsSlide: React.FC<MonochromeSlideProps> = () => {
 
   const curiousFacts = [
     {
-      text: "Estoy leyendo \"Enamórate del problema, no de la solución\".",
+      text: "Estoy leyendo un libro llamado \"Enamórate del problema, no de la solución\".",
       subtext: "",
       icon: "📚"
     },
@@ -468,7 +468,7 @@ export const PersonalCuriousFactsSlide: React.FC<MonochromeSlideProps> = () => {
               transition={{ duration: 0.6, delay: 0.1, ease: [0.215, 0.61, 0.355, 1] }}
               className="block text-medium-gray text-2xl md:text-3xl"
             >
-              sobre mí
+              Sobre mí
             </motion.span>
           </h2>
         </motion.div>
@@ -544,11 +544,17 @@ export const RomanticFunFactsSlide: React.FC<MonochromeSlideProps> = ({ slide })
     ["🍷", "🥂", "🍾", "🥃", "☕", "🍸", "🧊", "🌟", "💫", "✨"],
     ["🌍", "✈️", "🏔️", "🌊", "🏖️", "🌅", "🗺️", "🧳", "📍", "🌎"],
     ["🎯", "🏆", "⚡", "🔥", "💪", "🚀", "⭐", "💎", "👑", "🏅"],
-    ["❤️", "💝", "🌹", "💕", "💖", "🦋", "🌸", "💐", "🌺", "🌻"]
+    ["🎶", "🎵", "🎤", "🎧", "🎸", "🥁", "🎷", "🎹", "🪩", "🕺", "💃", "🎼", "🎺", "🎻", "🎬", "🎉", "🎊", "🎈", "😄", "🤗"],
   ];
 
   // Real images from public folder (only for second set)
   const realImages = [
+    "/susana-qr-invitation/images/fitness-1.jpg",
+    "/susana-qr-invitation/images/fitness-2.jpg", 
+    "/susana-qr-invitation/images/fitness-3.jpg",
+    "/susana-qr-invitation/images/fitness-4.jpg",
+    "/susana-qr-invitation/images/fitness-5.jpg",
+    "/susana-qr-invitation/images/fitness-6.jpg",
     "/susana-qr-invitation/images/fitness-1.jpg",
     "/susana-qr-invitation/images/fitness-2.jpg", 
     "/susana-qr-invitation/images/fitness-3.jpg",
@@ -746,7 +752,7 @@ export const RomanticFunFactsSlide: React.FC<MonochromeSlideProps> = ({ slide })
             {
               horizontalSlideIndex === 1 && (
                 <h2 className='text-white/30 text-sm font-light italic text-center py-5'>
-                    (Estos podríamos ser nosotros, mira lo feliz que estas)*
+                    (Estos podríamos ser nosotros, mira lo feliz que estás)*
                 </h2>
               )
             }
@@ -1229,7 +1235,7 @@ export const CallToActionSlide: React.FC<MonochromeSlideProps> = () => {
             <p className="text-start text-base md:text-lg leading-relaxed font-serif italic">
               Si me respondes, genial. Si no… simplemente fingiré normalidad cada vez que coincidamos en el gym.
               <br />
-              (O cambiaré de horario, apellido e incluso gimnasio 🤠).
+              (O cambiaré de horario, apellido e incluso sede 🤠).
             </p>
           </motion.div>
       </div>
