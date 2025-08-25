@@ -132,8 +132,11 @@ export const RomanticWelcomeSlide: React.FC<MonochromeSlideProps> = ({ slide }) 
                   }}
                   className="text-md text-dark-gray leading-relaxed premium-text text-start"
                 >
-                  Especialmente cuando la otra persona parece tan enfocada en sus metas que incluso las máquinas del gimnasio parecen pedirle permiso para ser usadas. <br />
-(Sí, hablo de ti 🏋️‍♀️😉)
+                  Especialmente cuando la otra persona está tan enfocada en sus metas, que hasta las máquinas del gimnasio intentan detenerla. <br />
+
+                  <span className='font-light text-sm'>
+                    (El otro día una lo consiguió… enredándole el cabello 😅).
+                  </span>
                 </motion.p>
               ))}
             </div>
@@ -211,8 +214,9 @@ export const RomanticReasonSlide: React.FC<MonochromeSlideProps> = () => {
             <div className="border-l-2 border-white pl-6 mb-8">
               <blockquote className="text-xl md:text-2xl text-charcoal leading-relaxed font-serif italic">
                 Susana, de origen hebreo. <br />
-Significa “lirio” o “flor blanca”. <br />
-Como esas personas que no necesitan alzar la voz para hacerse notar. <br />
+                Significa “lirio” o “flor blanca”. <br />
+                Emblema de pureza, belleza y gracia.<br /> <br />
+                Como esas personas que no necesitan alzar la voz para hacerse notar. <br />
               </blockquote>
             </div>
 
@@ -232,7 +236,7 @@ Como esas personas que no necesitan alzar la voz para hacerse notar. <br />
                       transition={{ duration: 0.6, delay: 0.8 * 0.2 }}
                     />
                     <p className="text-lg text-charcoal leading-relaxed premium-text">
-                      No es un nombre para cualquiera. <br />
+                      No cualquiera lleva su nombre con tanta justicia.<br />
                       Por eso, esta tampoco es una invitación cualquiera. <br />
                     </p>
                   </motion.div>
@@ -311,7 +315,8 @@ export const RomanticWhyYouSlide: React.FC<MonochromeSlideProps> = () => {
                 <div className="flex items-start space-x-3">
                   <div className="flex-1">
                     <p className="text-md md:text-lg text-charcoal leading-relaxed premium-text">
-                      Podría haber buscado tu número o soltado un comentario cualquiera en medio de una serie de sentadillas 🤔
+                      Podría haber soltado un comentario cualquiera en medio de una serie de sentadillas 🤔 <br />
+                      o buscar un pretexto rápido para iniciar una conversación.
                     </p>
                   </div>
                 </div>
@@ -330,7 +335,7 @@ export const RomanticWhyYouSlide: React.FC<MonochromeSlideProps> = () => {
                 <div className="flex items-start space-x-3">
                   <div className="flex-1">
                     <blockquote className="text-lg md:text-xl text-charcoal leading-relaxed font-serif italic font-semibold">
-                      Pero no. <br />
+                      Pero no lo hice. <br />
                       Preferí hacer algo distinto.
                     </blockquote>
                   </div>
@@ -370,7 +375,7 @@ export const RomanticWhyYouSlide: React.FC<MonochromeSlideProps> = () => {
                 <div className="flex items-start space-x-3">
                   <div className="flex-1">
                     <p className="text-xs text-charcoal leading-relaxed premium-text">
-                      (Además, hacer sitios web es más fácil que interrumpir una serie de sentadillas… todos sabemos que eso es ilegal en al menos 14 países).
+                      (Además, Hacer un sitio web me toma menos tiempo que desenredar una máquina celosa de tu cabello 😏).
                     </p>
                   </div>
                 </div>
@@ -403,9 +408,9 @@ export const PersonalCuriousFactsSlide: React.FC<MonochromeSlideProps> = () => {
       icon: "☕️"
     },
     {
-      text: "Perros >>> gatos",
-      subtext: "(aunque me cambien por una pelota).",
-      icon: "🐕"
+      text: "Los mejores planes son los que no se planean.",
+      subtext: " ",
+      icon: "🌀"
     },
     {
       text: "Prefiero escapadas de día al campo que fiestas de noche en la ciudad.",
@@ -488,7 +493,7 @@ export const PersonalCuriousFactsSlide: React.FC<MonochromeSlideProps> = () => {
               whileHover={{ x: 10, transition: { duration: 0.3 } }}
               className="group space-y-3"
             >
-              <div className="flex items-start space-x-6">
+              <div className="flex items-center space-x-6">
                 {/* Icon */}
                 <motion.div
                   className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 text-xl"
@@ -502,8 +507,8 @@ export const PersonalCuriousFactsSlide: React.FC<MonochromeSlideProps> = () => {
                 </motion.div>
                 
                 {/* Content */}
-                <div className="flex-1">
-                  <p className="text-md md:text-lg text-light-gray leading-relaxed group-hover:text-pure-white transition-colors duration-300 premium-text mb-2">
+                <div className="flex flex-col flex-1 space-y-1 justify-center items-start">
+                  <p className="text-md md:text-lg text-light-gray leading-relaxed group-hover:text-pure-white transition-colors duration-300 premium-text">
                     {fact.text}
                   </p>
                     {
@@ -1235,7 +1240,7 @@ export const CallToActionSlide: React.FC<MonochromeSlideProps> = () => {
             <p className="text-start text-base md:text-lg leading-relaxed font-serif italic">
               Si me respondes, genial. Si no… simplemente fingiré normalidad cada vez que coincidamos en el gym.
               <br />
-              (O cambiaré de horario, apellido e incluso sede 🤠).
+              (O cambiaré de horario, apellido e incluso de sede 🤠).
             </p>
           </motion.div>
       </div>

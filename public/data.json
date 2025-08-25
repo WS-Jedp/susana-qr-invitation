@@ -89,10 +89,11 @@
                 "title": "¿Qué me gustaría saber de ti?",
                 "questions": [
                     "¿Cuál es tu playlist de confianza en el gym para cuando necesitas motivación extra?",
-                    "¿Cuál es el ejercicio que más te emociona dominar?",
+                    "¿Cuál es la actividad física que más disfrutas?",
                     "¿Cómo te gusta disfrutar tu tiempo libre cuando no estás entrenando?",
                     "¿Crees que podríamos llevarnos bien?",
-                    "¿Dijiste la verdad en la pregunta anterior? 😏"
+                    "¿Dijiste la verdad en la pregunta anterior? 😏",
+                    "¿Crees que las personas se cruzan por casualidad… o porque de alguna forma tenían que cruzarse?"
                 ],
                 "audio": {
                     "src": "https://coffi-multimedia.s3.us-east-1.amazonaws.com/gymcrush/questions.mp3",
