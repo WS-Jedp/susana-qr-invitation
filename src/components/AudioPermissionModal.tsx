@@ -121,7 +121,7 @@ export const AudioPermissionModal: React.FC<AudioPermissionModalProps> = ({
             transition={{ duration: 0.8, delay: 0.4 }}
             className="text-4xl md:text-5xl font-bold text-white mb-6"
           >
-            ¿Lista para algo distinto?
+            Para Quien Merece Un Gesto Distinto
           </motion.h1>
 
           {/* Subtitle */}
@@ -144,7 +144,8 @@ ponte tus audífonos.
             className="space-y-4 mb-12"
           >
             <div className="flex items-center justify-center space-x-4 text-medium-gray">
-              <p className="text-lg">Esto se vive mejor con un buen sonido y sin distracciones.</p>
+              <p className="text-lg">Esta experiencia se disfruta mejor con calma.<br />
+Guárdala para un momento tuyo, en un lugar tranquilo y sin distracciones.</p>
             </div>
             
           </motion.div>

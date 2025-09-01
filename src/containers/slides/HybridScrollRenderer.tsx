@@ -229,7 +229,7 @@ const HybridScrollRenderer: React.FC<HybridScrollRendererProps> = ({
           containerRef.current = node;
           swipeRef.current = node;
         }}
-        className="h-dvh overflow-y-auto overflow-x-hidden motion-element"
+        className="relative h-dvh overflow-y-auto overflow-x-hidden motion-element"
         style={{ 
           scrollSnapType: isMobile ? 'none' : 'y mandatory',
           scrollBehavior: reducedMotion ? 'auto' : 'smooth',
@@ -240,7 +240,7 @@ const HybridScrollRenderer: React.FC<HybridScrollRendererProps> = ({
         {slides.map((slide, index) => (
           <div
             key={slide.id}
-            className="h-dvh w-full motion-element"
+            className="h-full w-full motion-element"
             style={{ 
               scrollSnapAlign: isMobile ? 'none' : 'start',
               willChange: 'transform'

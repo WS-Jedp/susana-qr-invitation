@@ -163,7 +163,7 @@ export const RomanticReasonSlide: React.FC<MonochromeSlideProps> = () => {
       ref={ref}
       className="relative h-dvh flex items-center justify-center bg-pure-white letter-paper"
     >
-      <div className="relative z-10 max-w-6xl mx-auto px-8 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center h-full">
+      <div className="relative z-10 max-w-6xl mx-auto px-8 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center h-dvh">
         {/* Title Section */}
         <motion.div
           style={{ y: y1 }}
@@ -208,7 +208,7 @@ export const RomanticReasonSlide: React.FC<MonochromeSlideProps> = () => {
             initial={{ scale: 0.95, opacity: 0 }}
             whileInView={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="p-8 md:p-12"
+            className=" md:p-12"
           >
             {/* Quote with Elegant Border */}
             <div className="border-l-2 border-white pl-6 mb-8">
@@ -275,7 +275,7 @@ export const RomanticWhyYouSlide: React.FC<MonochromeSlideProps> = () => {
         {/* Title with Professional Icon */}
         <motion.div
           style={{ y }}
-          className="text-center mb-16"
+          className="text-center"
         >
           <motion.div
             initial={{ scale: 0, opacity: 0 }}
@@ -299,7 +299,7 @@ export const RomanticWhyYouSlide: React.FC<MonochromeSlideProps> = () => {
         </motion.div>
 
           
-          <section className='flex flex-col space-y-6 mb-16 items-end justify-end text-end'>
+          <section className='flex flex-col space-y-6 items-end justify-end text-end mb-6'>
 
               <motion.div
                 initial={{ y: 40, opacity: 0 }}
@@ -375,7 +375,7 @@ export const RomanticWhyYouSlide: React.FC<MonochromeSlideProps> = () => {
                 <div className="flex items-start space-x-3">
                   <div className="flex-1">
                     <p className="text-xs text-charcoal leading-relaxed premium-text">
-                      (Además, Hacer un sitio web me toma menos tiempo que desenredar una máquina celosa de tu cabello 😏).
+                      (Además, hacer un sitio web no es tan especial como tus crespos 😉).
                     </p>
                   </div>
                 </div>
@@ -403,7 +403,7 @@ export const PersonalCuriousFactsSlide: React.FC<MonochromeSlideProps> = () => {
       icon: "🌊"
     },
     {
-      text: "Café >>> té.",
+      text: "Chocolate caliente >>> Café",
       subtext: null,
       icon: "☕️"
     },
@@ -757,7 +757,7 @@ export const RomanticFunFactsSlide: React.FC<MonochromeSlideProps> = ({ slide })
             {
               horizontalSlideIndex === 1 && (
                 <h2 className='text-white/30 text-sm font-light italic text-center py-5'>
-                    (Estos podríamos ser nosotros, mira lo feliz que estás)*
+                    (Estos podríamos ser nosotros, mira lo feliz que estamos)*
                 </h2>
               )
             }
