@@ -2,6 +2,25 @@
     "storytelling": {
         "slides": [
             {
+                "id": 0,
+                "title": "Intro",
+                "styles": [
+                    "humorístico",
+                    "poético"
+                ],
+                "quote": "",
+                "subtext": [
+                    "La vida nos ha cruzado demasiadas veces como para seguir siendo extraños. En el gimnasio, en la ciclovía, sin importar la hora… siempre hay una mirada que coincide."
+                ],
+                "audio": {
+                    "src": "https://coffi-multimedia.s3.us-east-1.amazonaws.com/gymcrush/superstar.mp3",
+                    "loop": {
+                        "start": 1,
+                        "end": 120
+                    }
+                }
+            },
+            {
                 "id": 1,
                 "title": "Conocerse",
                 "styles": [

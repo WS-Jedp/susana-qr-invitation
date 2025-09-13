@@ -10,6 +10,162 @@ interface MonochromeSlideProps {
   index: number;
 }
 
+// Editorial Cover Intro Slide with Industrial Layout
+export const RomanticIntroSlide: React.FC<MonochromeSlideProps> = () => {
+  const ref = useRef<HTMLDivElement>(null);
+  const { isMobile, getOptimizedConfig, getOptimizedTransform } = useOptimizedAnimations();
+
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"]
+  });
+
+  // Reduced parallax distances for mobile performance
+  const y1 = useTransform(scrollYProgress, [0, 1], [0, getOptimizedTransform(-60)]);
+  const y2 = useTransform(scrollYProgress, [0, 1], [0, getOptimizedTransform(-30)]);
+  const y3 = useTransform(scrollYProgress, [0, 1], [0, getOptimizedTransform(-90)]);
+
+  const baseAnimConfig = { duration: 0.8 };
+  const animConfig = getOptimizedConfig(baseAnimConfig);
+
+  return (
+    <motion.div
+      ref={ref}
+      className="relative h-dvh overflow-hidden bg-pure-white letter-paper motion-element"
+      style={{ willChange: 'transform' }}
+    >
+      {/* Industrial Grid Background */}
+      <div className="absolute inset-0 opacity-[0.02]">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `
+            linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: '60px 60px'
+        }} />
+      </div>
+
+      {/* Subtle Background Elements - Editorial style */}
+      {!isMobile && (
+        <div className="absolute inset-0">
+          <motion.div
+            className="absolute top-20 right-20 w-2 h-40 bg-charcoal/10 motion-element"
+            style={{ y: y1, willChange: 'transform' }}
+          />
+          <motion.div
+            className="absolute bottom-32 left-16 w-32 h-2 bg-charcoal/10 motion-element"
+            style={{ y: y2, willChange: 'transform' }}
+          />
+          <motion.div
+            className="absolute top-1/2 right-1/4 w-1 h-20 bg-charcoal/5 motion-element"
+            style={{ y: y3, willChange: 'transform' }}
+          />
+        </div>
+      )}
+
+      {/* Main Editorial Layout */}
+      <div className="relative z-10 h-full grid grid-cols-12 grid-rows-12 gap-4 p-8 md:p-16">
+        {/* Top Right - Volume/Issue Number */}
+        <motion.div
+          initial={{ opacity: 0, x: 30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ ...animConfig, delay: 0.2 }}
+          className="col-span-4 col-start-9 row-span-2 flex items-start justify-end motion-element"
+        >
+          <div className="text-right">
+            <div className="text-xs md:text-sm text-charcoal/60 font-mono font-bold uppercase tracking-wider">
+              Encontrarnos
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Main Headline - Center Top */}
+        <motion.div
+          style={{ y: y1, willChange: 'transform' }}
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ ...animConfig, delay: 0.4 }}
+          className="col-span-12 md:col-span-8 md:col-start-3 row-span-4 row-start-3 flex items-center justify-center motion-element"
+        >
+          <h1 className="text-2xl md:text-5xl lg:text-6xl leading-tight text-charcoal/80 text-center font-bold">
+            La vida nos ha cruzado
+            <br />
+            <span className="text-charcoal bg-gray-100 px-3">demasiadas veces</span>
+            <br />
+            como para seguir siendo
+            <br />
+            <span className="text-charcoal/60 bg-gray-100 px-3">extraños</span>
+          </h1>
+        </motion.div>
+
+        {/* Left Side Quote */}
+        <motion.div
+          style={{ y: y2, willChange: 'transform' }}
+          initial={{ opacity: 0, x: -40 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ ...animConfig, delay: 0.6 }}
+          className="col-span-5 md:col-span-3 row-span-3 row-start-8 flex items-center motion-element"
+        >
+          <div className="border-l-2 border-charcoal/20 pl-6">
+            <p className="text-sm md:text-base text-charcoal leading-relaxed italic">
+              En incontables ocasiones, sin importar dónde ni cuándo…
+            </p>
+          </div>
+        </motion.div>
+
+        {/* Right Side Statement */}
+        <motion.div
+          style={{ y: y3, willChange: 'transform' }}
+          initial={{ opacity: 0, x: 40 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ ...animConfig, delay: 0.8 }}
+          className="col-span-6 md:col-span-4 col-start-7 md:col-start-9 row-span-3 row-start-8 flex items-center justify-end motion-element"
+        >
+          <div className="text-right">
+            <p className="text-lg md:text-xl font-medium text-deep-black leading-tight">
+              siempre hay una mirada
+              <br />
+              <span className="text-charcoal/70 font-light italic">que coincide</span>
+            </p>
+          </div>
+        </motion.div>
+
+        {/* Bottom Right - Call to Action */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ ...animConfig, delay: 1.2 }}
+          className="col-span-4 col-start-9 row-span-1 row-start-12 flex items-end justify-end motion-element"
+        >
+          <div className="text-right">
+            <p className="text-xs md:text-sm text-charcoal/50 font-mono uppercase tracking-wider">
+              La Propuesta
+            </p>
+          </div>
+        </motion.div>
+
+        {/* Central Decorative Line */}
+        <motion.div
+          initial={{ scaleX: 0 }}
+          whileInView={{ scaleX: 1 }}
+          viewport={{ once: true }}
+          transition={{ ...animConfig, delay: 0.5, duration: 1.2 }}
+          className="col-span-8 col-start-3 row-span-1 row-start-7 flex items-center justify-center motion-element"
+          style={{ originX: 0.5 }}
+        >
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-charcoal/30 to-transparent"></div>
+        </motion.div>
+
+      </div>
+    </motion.div>
+  );
+};
+
 // Monochrome Welcome Slide with Letter Paper Texture
 export const RomanticWelcomeSlide: React.FC<MonochromeSlideProps> = ({ slide }) => {
   const ref = useRef<HTMLDivElement>(null);
@@ -115,7 +271,7 @@ export const RomanticWelcomeSlide: React.FC<MonochromeSlideProps> = ({ slide }) 
           className="p-8 md:p-12 max-w-3xl mx-auto motion-element"
         >
           <blockquote className="text-lg md:text-2xl text-charcoal leading-relaxed mb-6 font-serif italic text-start">
-            Pero no siempre es fácil.
+            Aunque no siempre es fácil.
           </blockquote>
 
           {slide.subtext && (
@@ -132,11 +288,14 @@ export const RomanticWelcomeSlide: React.FC<MonochromeSlideProps> = ({ slide }) 
                   }}
                   className="text-md text-dark-gray leading-relaxed premium-text text-start"
                 >
-                  Especialmente cuando la otra persona está tan enfocada en sus metas, que hasta las máquinas del gimnasio intentan detenerla. <br />
+                  Pero me cansé de verte pasar y quedarme en silencio.<br />
+                  Así que decidí convertir ese silencio en algo <span className='italic font-medium font-serif bg-blue-50 px-1'>especial.</span> <br /> <br />
 
-                  <span className='font-light text-sm'>
+                  Para que la próxima vez que nos crucemos, suceda algo más que una simple mirada 🤞🏾 <br />
+
+                  {/* <span className='font-light text-sm'>
                     (El otro día una lo consiguió… enredándole el cabello 😅).
-                  </span>
+                  </span> */}
                 </motion.p>
               ))}
             </div>
@@ -465,7 +624,7 @@ export const PersonalCuriousFactsSlide: React.FC<MonochromeSlideProps> = () => {
               transition={{ duration: 0.6, ease: [0.215, 0.61, 0.355, 1] }}
               className="block"
             >
-              Fun Facts
+              Un poco sobre mí
             </motion.span>
             <motion.span
               initial={{ opacity: 0, y: 30 }}
@@ -473,7 +632,7 @@ export const PersonalCuriousFactsSlide: React.FC<MonochromeSlideProps> = () => {
               transition={{ duration: 0.6, delay: 0.1, ease: [0.215, 0.61, 0.355, 1] }}
               className="block text-medium-gray text-2xl md:text-3xl"
             >
-              Sobre mí
+              Fun Facts
             </motion.span>
           </h2>
         </motion.div>
@@ -1338,21 +1497,11 @@ export const RomanticFinalSlide: React.FC<MonochromeSlideProps> = ({ slide }) =>
             className="mt-12 pt-6 border-t border-charcoal/20"
           >
             <p className="text-xs text-dark-gray mb-3 italic">
-              Para respuestas más rápidas (y ligeramente menos formales), también estoy en Instagram.  
+              Estamos entusiasmados con la posibilidad de recibir tu respuesta y avanzar a la siguiente etapa de esta propuesta. <br />
+              Toda observación será bienvenida para mejorar en futuras iteraciones. <br />
               <br />
-              *Aviso legal:* la velocidad de respuesta aumenta, pero el nivel de seriedad puede verse comprometido.
+              *Aviso legal:* La atención al detalle de este gesto no garantiza la misma eficiencia en los tiempos de respuesta.
             </p>
-            <motion.a
-              href="https://instagram.com/jedp_82"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center space-x-2 text-xs text-charcoal hover:text-deep-black transition-colors duration-300"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <span>📱</span>
-              <span className="font-mono">@jedp_82</span>
-            </motion.a>
           </motion.div>
       </div>
     </motion.div>

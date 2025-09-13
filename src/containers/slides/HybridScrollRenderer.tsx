@@ -4,6 +4,7 @@ import { useSlideStore } from '../../store/useSlideStore';
 import { useSwipe } from '../../hooks/useSwipe';
 import { MinimalAudioPlayer } from '../../components/MinimalAudioPlayer';
 import { 
+  RomanticIntroSlide,
   RomanticWelcomeSlide,
   RomanticReasonSlide,
   RomanticWhyYouSlide,
@@ -130,6 +131,8 @@ const HybridScrollRenderer: React.FC<HybridScrollRendererProps> = ({
     const props = { slide, isActive, index };
 
     switch (slide.id) {
+      case 0:
+        return <RomanticIntroSlide key={slide.id} {...props} />;
       case 1:
         return <RomanticWelcomeSlide key={slide.id} {...props} />;
       case 2:
